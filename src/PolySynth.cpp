@@ -23,8 +23,6 @@ void BasicPolyphonicAllocator::noteOn(int note, int velocity) {
 	if (voiceNumber < 0)
 		return; // no voice available
 
-	cout << ">> " << "Starting note " << note << " on voice " << voiceNumber << "\n";
-
 	PolyVoice& voice = voiceData[voiceNumber];
 
 	voice.synth.setParameter("_polyNote", note);
@@ -44,8 +42,6 @@ void BasicPolyphonicAllocator::noteOff(int note) {
 	for (int voiceNumber : activeVoiceQueue) {
 		PolyVoice& voice = voiceData[voiceNumber];
 		if (voice.currentNote == note) {
-			cout << ">> " << "Stopping note " << note << " on voice " << voiceNumber << "\n";
-
 			voice.synth.setParameter("_polyGate", 0.0);
 
 			activeVoiceQueue.remove(voiceNumber);
