@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -e
+
 cd third/Tonic/
 make clean
 make -j8 
