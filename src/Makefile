@@ -20,7 +20,7 @@ ifdef JAVASCRIPT
 TARGET := patchscript.html
 endif
 
-SRCS  := tonic_lua0.cpp tonic_lua1.cpp tonic_lua2.cpp PolySynth.cpp lvplugin.cpp 
+SRCS  := tonic_lua0.cpp tonic_lua1.cpp tonic_lua2.cpp PolySynth.cpp lvplugin.cpp  PatchScript.cpp
 CXXFLAGS += -I/usr/lib64/ -I../third/kaguya/include -I../third/lua-5.3.5/src -I../third/Tonic/src -fpic
 LIBS += -ltonic -llua -ldl -llilv-0 -lz
 LDFLAGS += -L../third/lua-5.3.5/src -L../third/Tonic/src -shared

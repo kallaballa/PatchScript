@@ -11,29 +11,31 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include "PolySynth.hpp"
+
 namespace kaguya {
 class State;
 }
 
+namespace Tonic {
+class Synth;
+}
+
+
 namespace patchscript {
 
-class Synth;
-class PolySynth;
-
 class PatchScript {
-	Synth* synth = nullptr;
+	Tonic::Synth* synth = nullptr;
 	PolySynth* poly = nullptr;
-	kaguya::State state;
-	std::vector<Synth*> s;
+	kaguya::State* state = nullptr;
+	std::vector<Tonic::Synth*> s;
 public:
 	PatchScript();
 	virtual ~PatchScript();
-  void setErrorHandler(std::function<void(int,const char*)> errorfunction) {
-  	state.setErrorHandler(errorfunction);
-  }
-
-  void init(const std::string& patchFile, const size_t& numVoices);
+  void setErrorHandler(std::function<void(int,const char*)> errorfunction);
+  bool init(const std::string& patchFile, const size_t& numVoices);
   void destroy();
+  PolySynth* getPolySynth();
 };
 
 } /* namespace patchscript */

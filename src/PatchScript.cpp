@@ -1,19 +1,22 @@
 #include "PatchScript.hpp"
 #include "Tonic.h"
-#include "PolySynth.hpp"
 #include "kaguya/kaguya.hpp"
 #include "tonic_lua.hpp"
 
 namespace patchscript {
+using Tonic::Synth;
 
-PatchScript::PatchScript() {
-	bindings0(state);
-	bindings1(state);
-	bindings2(state);
+PatchScript::PatchScript() : state(new kaguya::State()) {
+	bindings0(*state);
+	bindings1(*state);
+	bindings2(*state);
 }
 
 PatchScript::~PatchScript() {
-	// TODO Auto-generated destructor stub
+}
+
+void PatchScript::setErrorHandler(std::function<void(int,const char*)> errorfunction) {
+	state->setErrorHandler(errorfunction);
 }
 
 bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
@@ -25,8 +28,8 @@ bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
 				delete (s[i]);
 			}
 			s[i] = new Synth();
-			state["synth"] = s[i];
-			if (!state.dofile(patchFile)) {
+			(*state)["synth"] = s[i];
+			if (!state->dofile(patchFile)) {
 				break;
 			}
 			poly->addVoice(*s[i]);
@@ -43,5 +46,10 @@ bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
 void PatchScript::destroy() {
 
 }
+
+PolySynth* PatchScript::getPolySynth() {
+	return poly;
+}
+
 
 } /* namespace patchscript */
