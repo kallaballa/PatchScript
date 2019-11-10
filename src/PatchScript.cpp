@@ -14,6 +14,7 @@ PatchScript::PatchScript(size_t sampleRate) : state(new kaguya::State()) {
 }
 
 PatchScript::~PatchScript() {
+	delete(state);
 }
 
 void PatchScript::setErrorHandler(std::function<void(int,const char*)> errorfunction) {
