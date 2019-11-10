@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Tonic.h"
+#include <mutex>
 
 using namespace Tonic;
 
 template<typename VoiceAllocator>
 class PolySynthWithAllocator: public Synth {
+private:
+	std::mutex polyMutex_;
 public:
 	PolySynthWithAllocator() :
 			Synth() {
@@ -17,29 +20,35 @@ public:
 	}
 
 	void addVoice(Synth synth) {
+		std::scoped_lock lock(polyMutex_);
 		allocator.addVoice(synth);
 		mixer.addInput(synth);
 	}
 
 	std::vector<typename VoiceAllocator::PolyVoice>& getVoices() {
+		std::scoped_lock lock(polyMutex_);
 		return allocator.getVoices();
 	}
 
 	typedef Synth (VoiceCreateFn)();
 	void addVoices(VoiceCreateFn createFn, int count) {
+		std::scoped_lock lock(polyMutex_);
 		for (int i = 0; i < count; i++)
 			addVoice(createFn());
 	}
 
 	void noteOn(int note, int velocity) {
+		std::scoped_lock lock(polyMutex_);
 		allocator.noteOn(note, velocity);
 	}
 
 	void noteOff(int note) {
+		std::scoped_lock lock(polyMutex_);
 		allocator.noteOff(note);
 	}
 
 	void clearAllNotes() {
+		std::scoped_lock lock(polyMutex_);
 		allocator.clearAllNotes();
 	}
 protected:
