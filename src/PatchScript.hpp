@@ -25,17 +25,18 @@ class Synth;
 namespace patchscript {
 
 class PatchScript {
-	Tonic::Synth* synth = nullptr;
-	PolySynth* poly = nullptr;
+	Tonic::Synth* synth_ = nullptr;
+	PolySynth* poly_ = nullptr;
 	kaguya::State* state = nullptr;
 	std::vector<Tonic::Synth*> s;
 public:
-	PatchScript();
+	PatchScript(size_t sampleRate);
 	virtual ~PatchScript();
   void setErrorHandler(std::function<void(int,const char*)> errorfunction);
   bool init(const std::string& patchFile, const size_t& numVoices);
   void destroy();
   PolySynth* getPolySynth();
+  void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);
 };
 
 } /* namespace patchscript */

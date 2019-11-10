@@ -6,7 +6,8 @@
 namespace patchscript {
 using Tonic::Synth;
 
-PatchScript::PatchScript() : state(new kaguya::State()) {
+PatchScript::PatchScript(size_t sampleRate) : state(new kaguya::State()) {
+	Tonic::setSampleRate(sampleRate);
 	bindings0(*state);
 	bindings1(*state);
 	bindings2(*state);
@@ -20,36 +21,37 @@ void PatchScript::setErrorHandler(std::function<void(int,const char*)> errorfunc
 }
 
 bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
-	synth = new Synth();
-	poly = new PolySynth();
+	synth_ = new Synth();
+	poly_ = new PolySynth();
 	try {
 		for (size_t i = 0; i < numVoices; ++i) {
-			if (s[i] != nullptr) {
-				delete (s[i]);
-			}
-			s[i] = new Synth();
-			(*state)["synth"] = s[i];
+			Synth s;
+			(*state)["synth"] = &s;
 			if (!state->dofile(patchFile)) {
 				break;
 			}
-			poly->addVoice(*s[i]);
+			poly_->addVoice(s);
 		}
 	} catch (std::exception& e) {
 		return false;
 	}
 
-	synth->setOutputGen(*poly);
+	synth_->setOutputGen(*poly_);
 
-	return !poly->getVoices().empty();
+	return !poly_->getVoices().empty();
 }
 
 void PatchScript::destroy() {
-
+	delete (synth_);
+	delete (poly_);
 }
 
 PolySynth* PatchScript::getPolySynth() {
-	return poly;
+	return poly_;
 }
 
 
+void PatchScript::fill(float *outData,  unsigned int numFrames, unsigned int numChannels) {
+	synth_->fillBufferOfFloats(outData, numFrames, numChannels);
+}
 } /* namespace patchscript */
