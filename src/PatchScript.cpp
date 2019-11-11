@@ -1,3 +1,5 @@
+#include <cstdlib>
+#include "defines.hpp"
 #include "PatchScript.hpp"
 #include "Tonic.h"
 #include "kaguya/kaguya.hpp"
@@ -17,11 +19,46 @@ PatchScript::~PatchScript() {
 	delete(state);
 }
 
+std::pair<bool, string> PatchScript::checkHomeDir() {
+	const char* home = std::getenv(DEFAULT_ENV_VARIABLE);
+	if(home == nullptr) {
+		return {false,(string("Can't find ") + DEFAULT_ENV_VARIABLE + " environment variable")};
+	}
+	config.patchScriptDir_ = fs::path(string(home) + "/" + DEFAULT_HOME_DIR);
+	config.dataDir_ = fs::path(string(home) + "/" + DEFAULT_DATA_DIR);
+	config.logDir_ = fs::path(string(home) + "/" + DEFAULT_LOG_DIR);
+
+	if(fs::exists(config.patchScriptDir_)) {
+		if(!fs::is_directory(config.patchScriptDir_)) {
+			return {false,(config.patchScriptDir_.string() + " is not a directory")};
+		}
+
+		if(!(fs::exists(config.dataDir_) && fs::is_directory(config.dataDir_))) {
+			return {false,(config.dataDir_.string() + " doesn't exist or is not a directory")};
+		}
+
+		if(!(fs::exists(config.logDir_) && fs::is_directory(config.logDir_))) {
+			return {false,(config.logDir_.string() + " doesn't exist or is not a directory")};
+		}
+	} else {
+		fs::create_directory(config.patchScriptDir_);
+		fs::create_directory(config.dataDir_);
+		fs::create_directory(config.logDir_);
+	}
+
+	return {true, "Success"};
+}
+
 void PatchScript::setErrorHandler(std::function<void(int,const char*)> errorfunction) {
 	state->setErrorHandler(errorfunction);
 }
 
-bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
+std::pair<bool, string> PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
+	auto result = checkHomeDir();
+	if(!result.first) {
+		return result;
+	}
+
 	synth_ = new Synth();
 	poly_ = new PolySynth();
 	try {
@@ -34,12 +71,12 @@ bool PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
 			poly_->addVoice(s);
 		}
 	} catch (std::exception& e) {
-		return false;
+		return {false, e.what()};
 	}
 
 	synth_->setOutputGen(*poly_);
 
-	return !poly_->getVoices().empty();
+	return {true, "Success"};
 }
 
 void PatchScript::destroy() {

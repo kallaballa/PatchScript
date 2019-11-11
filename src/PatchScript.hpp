@@ -11,6 +11,8 @@
 #include <functional>
 #include <vector>
 #include <string>
+#include <experimental/filesystem>
+
 #include "PolySynth.hpp"
 
 namespace kaguya {
@@ -21,19 +23,30 @@ namespace Tonic {
 class Synth;
 }
 
-
 namespace patchscript {
 
+namespace fs = std::experimental::filesystem;
+
 class PatchScript {
+	struct Config {
+		fs::path patchScriptDir_;
+		fs::path configFile_;
+		fs::path controlStateFile_;
+		fs::path dataDir_;
+		fs::path logDir_;
+	};
+
 	Tonic::Synth* synth_ = nullptr;
 	PolySynth* poly_ = nullptr;
 	kaguya::State* state = nullptr;
 	std::vector<Tonic::Synth*> s;
+	Config config;
+	std::pair<bool, string> checkHomeDir();
 public:
 	PatchScript(size_t sampleRate);
 	virtual ~PatchScript();
   void setErrorHandler(std::function<void(int,const char*)> errorfunction);
-  bool init(const std::string& patchFile, const size_t& numVoices);
+  std::pair<bool, string> init(const std::string& patchFile, const size_t& numVoices);
   void destroy();
   PolySynth* getPolySynth();
   void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);
