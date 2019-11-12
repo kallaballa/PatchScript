@@ -19,6 +19,8 @@
 #endif
 
 #include "PolySynth.hpp"
+#include "SqlStore.hpp"
+#include "defines.hpp"
 
 namespace kaguya {
 class State;
@@ -43,11 +45,13 @@ class PatchScript {
 		fs::path controlStateFile_;
 		fs::path dataDir_;
 		fs::path logDir_;
+		fs::path dbFile_;
 	};
 
 	Tonic::Synth* synth_ = nullptr;
 	PolySynth* poly_ = nullptr;
 	kaguya::State* state = nullptr;
+	SqlStore* store_ = nullptr;
 	std::vector<Tonic::Synth*> s;
 	Config config;
 	std::pair<bool, string> checkHomeDir();
@@ -58,6 +62,9 @@ public:
   std::pair<bool, string> init(const std::string& patchFile, const size_t& numVoices);
   void destroy();
   PolySynth* getPolySynth();
+  void listPatches(std::vector<PatchObject>& patches);
+  void selectPatches(const PatchObject& po, std::vector<PatchObject>& patches);
+  void storePatch(const PatchObject& po);
   void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);
 };
 
