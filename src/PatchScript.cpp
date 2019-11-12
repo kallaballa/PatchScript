@@ -27,6 +27,7 @@ std::pair<bool, string> PatchScript::checkHomeDir() {
 	config.patchScriptDir_ = fs::path(string(home) + "/" + DEFAULT_HOME_DIR);
 	config.dataDir_ = fs::path(string(home) + "/" + DEFAULT_DATA_DIR);
 	config.logDir_ = fs::path(string(home) + "/" + DEFAULT_LOG_DIR);
+	config.dbFile_ = fs::path(string(home) + "/" + DEFAULT_DB_FILE);
 
 	if(fs::exists(config.patchScriptDir_)) {
 		if(!fs::is_directory(config.patchScriptDir_)) {
@@ -59,8 +60,15 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 		return result;
 	}
 
+	try {
+		store_ = new SqlStore(config.dbFile_);
+	} catch (std::exception& ex) {
+		return {false, ex.what()};
+	}
+
 	synth_ = new Synth();
 	poly_ = new PolySynth();
+
 	try {
 		for (size_t i = 0; i < numVoices; ++i) {
 			Synth s;
@@ -80,15 +88,27 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 }
 
 void PatchScript::destroy() {
-	delete (synth_);
-	delete (poly_);
+	if(synth_)
+		delete (synth_);
+	if(poly_)
+		delete (poly_);
 }
 
 PolySynth* PatchScript::getPolySynth() {
 	return poly_;
 }
 
+void PatchScript::listPatches(std::vector<PatchObject>& patches) {
+	store_->list(patches);
+}
 
+void PatchScript::selectPatches(const PatchObject& po, std::vector<PatchObject>& patches) {
+	store_->select(po,patches);
+}
+
+void PatchScript::storePatch(const PatchObject& po) {
+	store_->store(po);
+}
 void PatchScript::fill(float *outData,  unsigned int numFrames, unsigned int numChannels) {
 	synth_->fillBufferOfFloats(outData, numFrames, numChannels);
 }
