@@ -1,6 +1,8 @@
 UNAME_S := $(shell uname -s)
 
 ifeq ($(UNAME_S), Darwin)
+	CFLAGS += -mmacosx-version-min=10.15
+	CXXFLAGS += -mmacosx-version-min=10.15
 endif
 
 ifeq ($(UNAME_S), Linux)
