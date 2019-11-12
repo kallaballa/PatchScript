@@ -11,7 +11,12 @@
 #include <functional>
 #include <vector>
 #include <string>
+
+#ifdef __APPLE__
+#include "filesystem.hpp"
+#else
 #include <experimental/filesystem>
+#endif
 
 #include "PolySynth.hpp"
 
@@ -25,7 +30,11 @@ class Synth;
 
 namespace patchscript {
 
+#ifdef __APPLE__
+namespace fs = ghc::filesystem;
+#else
 namespace fs = std::experimental::filesystem;
+#endif
 
 class PatchScript {
 	struct Config {
