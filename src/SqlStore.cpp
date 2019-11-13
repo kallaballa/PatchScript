@@ -1,10 +1,3 @@
-/*
- * GitStore.cpp
- *
- *  Created on: Nov 11, 2019
- *      Author: elchaschab
- */
-
 #include "SqlStore.hpp"
 #include "Exception.h"
 #include "fts3_tokenizer.h"
@@ -25,18 +18,28 @@ const string CREATE_PATCHES = R"_STATEMENT_(
 	    description TEXT NOT NULL,
 	    code TEXT NOT NULL,
 			date INTEGER NOT NULL,
+			layout TEXT NULL,
+			parameters TEXT NULL,
+			keyboardBindings TEXT NULL,
+			midiBindings TEXT NULL,
 			PRIMARY KEY(name,revision)
 		);
 		)_STATEMENT_";
 
-const string INSERT_PATCH = "INSERT INTO patches VALUES(?, ?, ?, ?, ?, ?, ?);";
+const string INSERT_PATCH = "INSERT INTO patches VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 const string SELECT_ALL_PATCHES = "SELECT * FROM patches ORDER BY name, date;";
 const string SELECT_PATCHES = "SELECT * FROM patches ";
 const string SELECT_MAX_REVISION = "SELECT max(revision) FROM patches WHERE name == ?;";
 
 SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
+	stmtCreatePatches_ = new sqlite::Statement(db_._db, CREATE_PATCHES);
 	//create patches table if the db is empty
-	db_.update(CREATE_PATCHES);
+	stmtCreatePatches_->step();
+
+	stmtInsertPatch_ = new sqlite::Statement(db_._db, INSERT_PATCH);
+	stmtSelectAllPatches_ = new sqlite::Statement(db_._db, SELECT_ALL_PATCHES);
+	stmtSelectPatches_ = new sqlite::Statement(db_._db, SELECT_PATCHES);
+	stmtSelectMaxRevision_ = new sqlite::Statement(db_._db, SELECT_MAX_REVISION);
 }
 
 SqlStore::~SqlStore() {
@@ -45,14 +48,42 @@ SqlStore::~SqlStore() {
 
 void SqlStore::store(const PatchObject& po) {
 	db_.update("BEGIN TRANSACTION;");
-	auto stmt = db_.query(SELECT_MAX_REVISION, po.name_);
+	stmtSelectMaxRevision_->reset();
+	stmtSelectMaxRevision_->bind(1, po.name_);
 
-	if(stmt.step() == sqlite::Statement::ROW) {
-		db_.update(INSERT_PATCH, po.name_, stmt.column_int64(0) + 1, po.runtimeName_, po.runtimeVersion_, po.description_, po.code_, po.date_);
-	} else {
-		db_.update(INSERT_PATCH, po.name_, 0, po.runtimeName_, po.runtimeVersion_, po.description_, po.code_, po.date_);
+	int64_t revision = 0;
+	if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
+		revision = stmtSelectMaxRevision_->column_int64(0) + 1;
 	}
+	stmtInsertPatch_->reset();
+	stmtInsertPatch_->bind(1, po.name_);
+	stmtInsertPatch_->bind(2, revision);
+	stmtInsertPatch_->bind(3, po.runtimeName_);
+	stmtInsertPatch_->bind(4, po.runtimeVersion_);
+	stmtInsertPatch_->bind(5, po.description_);
+	stmtInsertPatch_->bind(6, po.code_);
+	stmtInsertPatch_->bind(7, po.date_);
 
+	if (!po.layout_.empty())
+		stmtInsertPatch_->bind(8, po.layout_);
+	else
+		stmtInsertPatch_->bind(8);
+
+	if (!po.parameters_.empty())
+		stmtInsertPatch_->bind(9, po.parameters_);
+	else
+		stmtInsertPatch_->bind(9);
+
+	if (!po.keyboardBindings_.empty())
+		stmtInsertPatch_->bind(10, po.keyboardBindings_);
+	else
+		stmtInsertPatch_->bind(10);
+
+	if (!po.midiBindings_.empty())
+		stmtInsertPatch_->bind(11, po.midiBindings_);
+	else
+		stmtInsertPatch_->bind(11);
+	stmtInsertPatch_->step();
 	db_.update("COMMIT;");
 }
 
@@ -89,15 +120,55 @@ void SqlStore::select(const PatchObject& po, std::vector<PatchObject>& result) {
 	auto stmt = db_.query(ss.str());
 
 	while (stmt.step() == sqlite::Statement::ROW) {
-		result.push_back(PatchObject{stmt.column_string(0), stmt.column_int64(1), stmt.column_string(2), stmt.column_string(3), stmt.column_string(4), stmt.column_string(5), stmt.column_int64(6)});
+		PatchObject po{stmt.column_string(0),
+			stmt.column_int64(1),
+			stmt.column_string(2),
+			stmt.column_string(3),
+			stmt.column_string(4),
+			stmt.column_string(5),
+			stmt.column_int64(6),
+			"",
+			"",
+			"",
+			""};
+
+		if(stmt.column_type(7) != sqlite::Statement::NUL)
+			po.layout_ = stmt.column_string(7);
+		if(stmt.column_type(8) != sqlite::Statement::NUL)
+			po.parameters_ = stmt.column_string(8);
+		if(stmt.column_type(9) != sqlite::Statement::NUL)
+			po.keyboardBindings_ = stmt.column_string(9);
+		if(stmt.column_type(10) != sqlite::Statement::NUL)
+			po.midiBindings_ = stmt.column_string(10);
+		result.push_back(po);
 	}
 }
 
 void SqlStore::list(std::vector<PatchObject>& result) {
-	auto stmt = db_.query(SELECT_ALL_PATCHES);
+	stmtSelectAllPatches_->reset();
 
-	while (stmt.step() == sqlite::Statement::ROW) {
-		result.push_back(PatchObject{stmt.column_string(0), stmt.column_int64(1), stmt.column_string(2), stmt.column_string(3), stmt.column_string(4), stmt.column_string(5), stmt.column_int64(6)});
+	while (stmtSelectAllPatches_->step() == sqlite::Statement::ROW) {
+		PatchObject po{stmtSelectAllPatches_->column_string(0),
+			stmtSelectAllPatches_->column_int64(1),
+			stmtSelectAllPatches_->column_string(2),
+			stmtSelectAllPatches_->column_string(3),
+			stmtSelectAllPatches_->column_string(4),
+			stmtSelectAllPatches_->column_string(5),
+			stmtSelectAllPatches_->column_int64(6),
+			"",
+			"",
+			"",
+			""};
+
+		if(stmtSelectAllPatches_->column_type(7) != sqlite::Statement::NUL)
+			po.layout_ = stmtSelectAllPatches_->column_string(7);
+		if(stmtSelectAllPatches_->column_type(8) != sqlite::Statement::NUL)
+			po.parameters_ = stmtSelectAllPatches_->column_string(8);
+		if(stmtSelectAllPatches_->column_type(9) != sqlite::Statement::NUL)
+			po.keyboardBindings_ = stmtSelectAllPatches_->column_string(9);
+		if(stmtSelectAllPatches_->column_type(10) != sqlite::Statement::NUL)
+			po.midiBindings_ = stmtSelectAllPatches_->column_string(10);
+		result.push_back(po);
 	}
 }
 } /* namespace patchscript */

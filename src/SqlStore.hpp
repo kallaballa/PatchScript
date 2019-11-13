@@ -16,6 +16,10 @@ struct PatchObject {
 	string description_;
 	string code_;
 	int64_t date_ = -1;
+	string layout_;
+	string parameters_;
+	string keyboardBindings_;
+	string midiBindings_;
 
 	bool isEmpty() const {
 		return name_.empty()
@@ -30,7 +34,12 @@ struct PatchObject {
 
 class SqlStore {
 	sqlite::DB db_;
-public:
+	sqlite::Statement* stmtCreatePatches_;
+	sqlite::Statement* stmtInsertPatch_;
+	sqlite::Statement* stmtSelectAllPatches_;
+	sqlite::Statement* stmtSelectPatches_;
+	sqlite::Statement* stmtSelectMaxRevision_;
+	public:
 	SqlStore(const string& dbfile);
 	virtual ~SqlStore();
 	void store(const PatchObject& po);

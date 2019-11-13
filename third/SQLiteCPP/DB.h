@@ -112,7 +112,6 @@ namespace sqlite {
         }
 #endif
 
-    private:
         sqlite3 *_db;
     };
 
