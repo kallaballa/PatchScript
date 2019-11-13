@@ -90,6 +90,7 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 void PatchScript::destroy() {
 	if(synth_)
 		delete (synth_);
+	poly_->clearAllNotes();
 	if(poly_)
 		delete (poly_);
 }
