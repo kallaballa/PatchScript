@@ -4,7 +4,7 @@ ifeq ($(UNAME_S), Darwin)
  BOOST_MT=-mt
 endif
 
-CXX      := g++
+CXX      := g++-7
 CXXFLAGS := -pthread -fno-strict-aliasing -std=c++17 -pedantic -Wall
 LDFLAGS  := -L/opt/local/lib
 LIBS     := -lpthread -lm 
@@ -13,12 +13,16 @@ DESTDIR := /
 PREFIX := /usr/local
 MACHINE := $(shell uname -m)
 
+ifeq ($(shell which g++-7),)
+  CXX=g++
+endif
+
 ifeq ($(UNAME_S), Darwin)
- CXX=clang++
- LD=clang++
- LDFLAGS += -L/opt/local/lib # MacPorts Boost doesn't come with pkgconfig
- CXXFLAGS += -stdlib=libc++  
- LDFLAGS += -stdlib=libc++ -framework CoreAudio -framework AudioToolbox -framework CoreMIDI -framework CoreData -framework CoreFoundation -framework Accelerate
+  CXX=clang++
+  LD=clang++
+  LDFLAGS += -L/opt/local/lib # MacPorts Boost doesn't come with pkgconfig
+  CXXFLAGS += -stdlib=libc++  
+  LDFLAGS += -stdlib=libc++ -framework CoreAudio -framework AudioToolbox -framework CoreMIDI -framework CoreData -framework CoreFoundation -framework Accelerate
 endif
 
 ifeq ($(MACHINE), x86_64)
