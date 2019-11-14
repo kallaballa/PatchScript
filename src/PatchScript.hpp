@@ -65,6 +65,7 @@ public:
   void listPatches(std::vector<PatchObject>& patches);
   void selectPatches(const PatchObject& po, std::vector<PatchObject>& patches);
   void storePatch(const PatchObject& po);
+  void deletePatches(const PatchObject& po);
   void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);
 };
 

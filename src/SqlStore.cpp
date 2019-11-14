@@ -26,15 +26,36 @@ const string CREATE_PATCHES = R"_STATEMENT_(
 		);
 		)_STATEMENT_";
 
+const string CREATE_TRASH = R"_STATEMENT_(
+		CREATE TABLE IF NOT EXISTS trash (
+	    name TEXT NOT NULL,
+	    revision INTEGER NOT NULL,
+	    runtimeName TEXT NOT NULL,
+	    runtimeVersion TEXT NOT NULL,
+	    description TEXT NOT NULL,
+	    code TEXT NOT NULL,
+			date INTEGER NOT NULL,
+			layout TEXT NULL,
+			parameters TEXT NULL,
+			keyboardBindings TEXT NULL,
+			midiBindings TEXT NULL
+		);
+		)_STATEMENT_";
+
 const string INSERT_PATCH = "INSERT INTO patches VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+const string INSERT_TRASH = "INSERT INTO trash ";
 const string SELECT_ALL_PATCHES = "SELECT * FROM patches ORDER BY name, date;";
 const string SELECT_PATCHES = "SELECT * FROM patches ";
 const string SELECT_MAX_REVISION = "SELECT max(revision) FROM patches WHERE name == ?;";
+const string DELETE_PATCHES = "DELETE FROM patches ";
 
 SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
 	stmtCreatePatches_ = new sqlite::Statement(db_._db, CREATE_PATCHES);
-	//create patches table if the db is empty
+	stmtCreateTrash_ = new sqlite::Statement(db_._db, CREATE_TRASH);
+
+	//create patches and trash table if the db is empty
 	stmtCreatePatches_->step();
+	stmtCreateTrash_->step();
 
 	stmtInsertPatch_ = new sqlite::Statement(db_._db, INSERT_PATCH);
 	stmtSelectAllPatches_ = new sqlite::Statement(db_._db, SELECT_ALL_PATCHES);
@@ -43,10 +64,16 @@ SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
 }
 
 SqlStore::~SqlStore() {
+	delete(stmtCreatePatches_);
+	delete(stmtCreateTrash_);
+	delete(stmtInsertPatch_);
+	delete(stmtSelectAllPatches_);
+	delete(stmtSelectPatches_);
+	delete(stmtSelectMaxRevision_);
 	db_.close();
 }
 
-void SqlStore::store(const PatchObject& po) {
+void SqlStore::storePatch(const PatchObject& po) {
 	db_.update("BEGIN TRANSACTION;");
 	stmtSelectMaxRevision_->reset();
 	stmtSelectMaxRevision_->bind(1, po.name_);
@@ -87,7 +114,7 @@ void SqlStore::store(const PatchObject& po) {
 	db_.update("COMMIT;");
 }
 
-void SqlStore::select(const PatchObject& po, std::vector<PatchObject>& result) {
+void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& result) {
 	std::ostringstream ss;
 	ss << SELECT_PATCHES;
 	std::vector<string> whereClauses;
@@ -144,7 +171,48 @@ void SqlStore::select(const PatchObject& po, std::vector<PatchObject>& result) {
 	}
 }
 
-void SqlStore::list(std::vector<PatchObject>& result) {
+void SqlStore::deletePatches(const PatchObject& po) {
+	std::ostringstream ssWhere;
+	std::ostringstream ssDelete;
+	std::ostringstream ssInsert;
+	std::vector<string> whereClauses;
+
+	ssDelete << DELETE_PATCHES;
+	ssInsert << INSERT_TRASH << SELECT_PATCHES;
+
+	if(!po.isEmpty()) {
+		ssWhere << "WHERE ";
+		if(!po.name_.empty())
+			whereClauses.push_back(string("name == '") + po.name_ + "'");
+		if(po.revision_ != -1)
+			whereClauses.push_back(string("revision == ") + std::to_string(po.revision_));
+		if(!po.runtimeName_.empty())
+			whereClauses.push_back(string("runtimeName == '") + po.runtimeName_ + "'");
+		if(!po.runtimeVersion_.empty())
+			whereClauses.push_back(string("runtimeVersion == '") + po.runtimeVersion_ + "'");
+		if(!po.description_.empty())
+			whereClauses.push_back(string("description == '") + po.description_ + "'");
+		if(!po.code_.empty())
+			whereClauses.push_back(string("code == '") + po.code_ + "'");
+		if(po.date_ != -1)
+			whereClauses.push_back(string("date > ") + std::to_string(po.date_));
+
+		for(size_t i = 0; i < whereClauses.size(); ++i) {
+			ssWhere << whereClauses[i];
+			if(i < whereClauses.size() - 1)
+				ssWhere << " AND ";
+		}
+	}
+
+	ssWhere << ";";
+	ssDelete << ssWhere.str();
+	ssInsert << ssWhere.str();
+
+	db_.update(ssInsert.str());
+	db_.update(ssDelete.str());
+}
+
+void SqlStore::listPatches(std::vector<PatchObject>& result) {
 	stmtSelectAllPatches_->reset();
 
 	while (stmtSelectAllPatches_->step() == sqlite::Statement::ROW) {

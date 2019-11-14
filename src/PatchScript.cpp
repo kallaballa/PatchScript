@@ -100,16 +100,21 @@ PolySynth* PatchScript::getPolySynth() {
 }
 
 void PatchScript::listPatches(std::vector<PatchObject>& patches) {
-	store_->list(patches);
+	store_->listPatches(patches);
 }
 
 void PatchScript::selectPatches(const PatchObject& po, std::vector<PatchObject>& patches) {
-	store_->select(po,patches);
+	store_->selectPatches(po,patches);
 }
 
 void PatchScript::storePatch(const PatchObject& po) {
-	store_->store(po);
+	store_->storePatch(po);
 }
+
+void PatchScript::deletePatches(const PatchObject& po) {
+	store_->deletePatches(po);
+}
+
 void PatchScript::fill(float *outData,  unsigned int numFrames, unsigned int numChannels) {
 	synth_->fillBufferOfFloats(outData, numFrames, numChannels);
 }

@@ -35,6 +35,7 @@ struct PatchObject {
 class SqlStore {
 	sqlite::DB db_;
 	sqlite::Statement* stmtCreatePatches_;
+	sqlite::Statement* stmtCreateTrash_;
 	sqlite::Statement* stmtInsertPatch_;
 	sqlite::Statement* stmtSelectAllPatches_;
 	sqlite::Statement* stmtSelectPatches_;
@@ -42,9 +43,10 @@ class SqlStore {
 	public:
 	SqlStore(const string& dbfile);
 	virtual ~SqlStore();
-	void store(const PatchObject& po);
-	void select(const PatchObject& po, std::vector<PatchObject>& result);
-	void list(std::vector<PatchObject>& result);
+	void storePatch(const PatchObject& po);
+	void selectPatches(const PatchObject& po, std::vector<PatchObject>& result);
+	void deletePatches(const PatchObject& po);
+	void listPatches(std::vector<PatchObject>& result);
 
 };
 
