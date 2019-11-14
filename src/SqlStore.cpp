@@ -75,43 +75,48 @@ SqlStore::~SqlStore() {
 
 void SqlStore::storePatch(const PatchObject& po) {
 	db_.update("BEGIN TRANSACTION;");
-	stmtSelectMaxRevision_->reset();
-	stmtSelectMaxRevision_->bind(1, po.name_);
+	try {
+		stmtSelectMaxRevision_->reset();
+		stmtSelectMaxRevision_->bind(1, po.name_);
 
-	int64_t revision = 0;
-	if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
-		revision = stmtSelectMaxRevision_->column_int64(0) + 1;
+		int64_t revision = 0;
+		if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
+			revision = stmtSelectMaxRevision_->column_int64(0) + 1;
+		}
+		stmtInsertPatch_->reset();
+		stmtInsertPatch_->bind(1, po.name_);
+		stmtInsertPatch_->bind(2, revision);
+		stmtInsertPatch_->bind(3, po.runtimeName_);
+		stmtInsertPatch_->bind(4, po.runtimeVersion_);
+		stmtInsertPatch_->bind(5, po.description_);
+		stmtInsertPatch_->bind(6, po.code_);
+		stmtInsertPatch_->bind(7, po.date_);
+
+		if (!po.layout_.empty())
+			stmtInsertPatch_->bind(8, po.layout_);
+		else
+			stmtInsertPatch_->bind(8);
+
+		if (!po.parameters_.empty())
+			stmtInsertPatch_->bind(9, po.parameters_);
+		else
+			stmtInsertPatch_->bind(9);
+
+		if (!po.keyboardBindings_.empty())
+			stmtInsertPatch_->bind(10, po.keyboardBindings_);
+		else
+			stmtInsertPatch_->bind(10);
+
+		if (!po.midiBindings_.empty())
+			stmtInsertPatch_->bind(11, po.midiBindings_);
+		else
+			stmtInsertPatch_->bind(11);
+		stmtInsertPatch_->step();
+		db_.update("COMMIT;");
+	} catch (std::exception& ex) {
+		db_.update("ROLLBACK;");
+		throw;
 	}
-	stmtInsertPatch_->reset();
-	stmtInsertPatch_->bind(1, po.name_);
-	stmtInsertPatch_->bind(2, revision);
-	stmtInsertPatch_->bind(3, po.runtimeName_);
-	stmtInsertPatch_->bind(4, po.runtimeVersion_);
-	stmtInsertPatch_->bind(5, po.description_);
-	stmtInsertPatch_->bind(6, po.code_);
-	stmtInsertPatch_->bind(7, po.date_);
-
-	if (!po.layout_.empty())
-		stmtInsertPatch_->bind(8, po.layout_);
-	else
-		stmtInsertPatch_->bind(8);
-
-	if (!po.parameters_.empty())
-		stmtInsertPatch_->bind(9, po.parameters_);
-	else
-		stmtInsertPatch_->bind(9);
-
-	if (!po.keyboardBindings_.empty())
-		stmtInsertPatch_->bind(10, po.keyboardBindings_);
-	else
-		stmtInsertPatch_->bind(10);
-
-	if (!po.midiBindings_.empty())
-		stmtInsertPatch_->bind(11, po.midiBindings_);
-	else
-		stmtInsertPatch_->bind(11);
-	stmtInsertPatch_->step();
-	db_.update("COMMIT;");
 }
 
 void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& result) {
@@ -172,6 +177,7 @@ void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& re
 }
 
 void SqlStore::deletePatches(const PatchObject& po) {
+	db_.update("BEGIN TRANSACTION;");
 	std::ostringstream ssWhere;
 	std::ostringstream ssDelete;
 	std::ostringstream ssInsert;
@@ -208,8 +214,14 @@ void SqlStore::deletePatches(const PatchObject& po) {
 	ssDelete << ssWhere.str();
 	ssInsert << ssWhere.str();
 
-	db_.update(ssInsert.str());
-	db_.update(ssDelete.str());
+	try {
+		db_.update(ssInsert.str());
+		db_.update(ssDelete.str());
+		db_.update("COMMIT;");
+	} catch (std::exception& ex) {
+		db_.update("ROLLBACK;");
+		throw;
+	}
 }
 
 void SqlStore::listPatches(std::vector<PatchObject>& result) {
