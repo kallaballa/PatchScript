@@ -20,8 +20,8 @@ int main(int argc, char** argv) {
 		exit(2);
 	}
 
-	PatchScript pscript(44100);
-	pscript.init("",0);
+	PatchScript pscript;
+	pscript.init();
 
 	std::vector<PatchObject> list;
 	pscript.listPatches(list);

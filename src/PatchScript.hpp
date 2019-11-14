@@ -56,10 +56,10 @@ class PatchScript {
 	Config config;
 	std::pair<bool, string> checkHomeDir();
 public:
-	PatchScript(size_t sampleRate);
+	PatchScript(size_t sampleRate= 44100);
 	virtual ~PatchScript();
   void setErrorHandler(std::function<void(int,const char*)> errorfunction);
-  std::pair<bool, string> init(const std::string& patchFile, const size_t& numVoices);
+  std::pair<bool, string> init(const std::string& patchFile = "", const size_t& numVoices = 0);
   void destroy();
   PolySynth* getPolySynth();
   void listPatches(std::vector<PatchObject>& patches);
