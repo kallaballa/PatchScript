@@ -19,3 +19,8 @@ src/*.dep
 .project
 .settings/
 src/libpatchscript.so
+src/fsexporter/fsexporter
+src/fsexporter/fsexporter.dep
+src/fsexporter/fsexporter.o
+
+
