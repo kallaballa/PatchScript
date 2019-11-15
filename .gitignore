@@ -22,5 +22,9 @@ src/libpatchscript.so
 src/fsexporter/fsexporter
 src/fsexporter/fsexporter.dep
 src/fsexporter/fsexporter.o
+src/fsimporter/fsimporter
+src/fsimporter/fsimporter.dep
+src/fsimporter/fsimporter.o
+
 
 
