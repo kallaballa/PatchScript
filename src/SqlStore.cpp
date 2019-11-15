@@ -49,6 +49,20 @@ const string SELECT_PATCHES = "SELECT * FROM patches ";
 const string SELECT_MAX_REVISION = "SELECT max(revision) FROM patches WHERE name == ?;";
 const string DELETE_PATCHES = "DELETE FROM patches ";
 
+std::ostream& operator<<(std::ostream& os, const PatchObject& po) {
+	os << "name=" << po.name_ << '\n';
+	os << "revision=" << po.revision_ << '\n';
+	os << "runtimeName=" << po.runtimeName_ << '\n';
+	os << "runtimeVersion=" << po.runtimeVersion_ << '\n';
+	os << "description=" << po.description_ << '\n';
+	os << "date=" << po.date_ << '\n';
+	os << "layout=" << po.layout_ << '\n';
+	os << "parameters=" << po.parameters_ << '\n';
+	os << "keyboardBindings=" << po.keyboardBindings_ << '\n';
+	os << "midiBindings=" << po.midiBindings_ << std::endl;
+	return os;
+}
+
 SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
 	stmtCreatePatches_ = new sqlite::Statement(db_._db, CREATE_PATCHES);
 	stmtCreateTrash_ = new sqlite::Statement(db_._db, CREATE_TRASH);

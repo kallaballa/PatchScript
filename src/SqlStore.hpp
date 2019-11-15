@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <iostream>
 #include "DB.h"
 
 using std::string;
@@ -31,6 +32,8 @@ struct PatchObject {
 				&& date_ == -1;
 	}
 };
+
+std::ostream& operator<<(std::ostream& os, const PatchObject& po);
 
 class SqlStore {
 	sqlite::DB db_;

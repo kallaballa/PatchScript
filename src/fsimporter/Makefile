@@ -6,25 +6,25 @@ endif
 
 ifndef STATIC
 ifeq ($(UNAME_S), Darwin)
-TARGET := libpatchscript.dylib
+TARGET := fsimporter
 else
-TARGET  := libpatchscript.so
+TARGET  := fsimporter
 endif
 else
-TARGET := libpatchscript.a
+TARGET := fsimporter
 endif
 
 ifdef JAVASCRIPT
-TARGET := patchscript.html
+TARGET := fsimporter.html
 endif
 
-SRCS  := tonic_lua0.cpp tonic_lua1.cpp tonic_lua2.cpp PolySynth.cpp lvplugin.cpp  PatchScript.cpp SqlStore.cpp FileStore.cpp
-CXXFLAGS += -I/usr/lib64/ -I../third/kaguya/include -I../third/lua-5.3.5/src -I../third/Tonic/src -I../third/SQLiteCPP -fpic
-LIBS += -ltonic -llua -ldl -llilv-0 -lz -lsqlite3
-LDFLAGS += -L../third/lua-5.3.5/src -L../third/Tonic/src -shared
+SRCS  :=  fsimporter.cpp
+CXXFLAGS += -I/usr/lib64/ -I../../third/kaguya/include -I../../third/lua-5.3.5/src -I../../third/Tonic/src -I../../third/SQLiteCPP -I../
+LIBS += -ltonic -llua -ldl -llilv-0 -lz -lsqlite3 -lpatchscript
+LDFLAGS += -L../../third/lua-5.3.5/src -L../../third/Tonic/src -L../
 
 #precompiled headers
-HEADERS := tonic_lua.hpp 
+HEADERS :=
 
 GCH     := ${HEADERS:.hpp=.gch}
 OBJS    := ${SRCS:.cpp=.o}
@@ -41,11 +41,7 @@ hardcore: ${TARGET}
 asan: ${TARGET}
 
 ${TARGET}: ${OBJS}
-ifndef STATIC
 	${CXX} ${LDFLAGS} -o $@ $^ ${LIBS}
-else
-	ar -rcs $@ $^
-endif
 
 ${OBJS}: %.o: %.cpp %.dep ${GCH}
 	${CXX} ${CXXFLAGS} -o $@ -c $< 

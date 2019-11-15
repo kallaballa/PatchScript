@@ -5,7 +5,7 @@
 using namespace patchscript;
 int main(int argc, char** argv) {
 	if(argc != 2) {
-		std::cerr << "Usage: fsexporter <output-directory>" << std::endl;
+		std::cerr << "Usage: fsimporter <input-directory>" << std::endl;
 		exit(1);
 	}
 
@@ -18,12 +18,14 @@ int main(int argc, char** argv) {
 	PatchScript pscript;
 	pscript.init();
 
-	std::vector<PatchObject> storedPatches;
-	pscript.listPatches(storedPatches);
-
 	FileStore store(outDir.string());
-	store.store(storedPatches);
 
+	std::vector<PatchObject> retrievedPatches;
+	store.retrieve(retrievedPatches);
+
+	for(const auto& po : retrievedPatches) {
+		pscript.storePatch(po);
+	}
 
 	return 0;
 }
