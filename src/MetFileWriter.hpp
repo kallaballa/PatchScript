@@ -10,7 +10,7 @@ class MetFileWriter {
 public:
 	MetFileWriter(std::ostream& os);
 	virtual ~MetFileWriter();
-	void write(const SessionObject& po);
+	void write(const SessionObject& so);
 };
 
 } /* namespace patchscript */

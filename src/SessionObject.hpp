@@ -11,6 +11,7 @@ using std::string;
 
 struct SessionObject {
 	string name_;
+	string author_;
 	int64_t revision_ = -1;
 	string runtimeName_;
 	string runtimeVersion_;
@@ -33,7 +34,7 @@ struct SessionObject {
 	}
 };
 
-std::ostream& operator<<(std::ostream& os, const SessionObject& po);
+std::ostream& operator<<(std::ostream& os, const SessionObject& so);
 
 } /* namespace patchscript */
 

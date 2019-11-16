@@ -62,10 +62,10 @@ public:
   std::pair<bool, string> init(const std::string& patchFile = "", const size_t& numVoices = 0);
   void destroy();
   PolySynth* getPolySynth();
-  void listPatches(std::vector<SessionObject>& patches);
-  void selectPatches(const SessionObject& po, std::vector<SessionObject>& patches);
-  void storePatch(const SessionObject& po);
-  void deletePatches(const SessionObject& po);
+  void list(std::vector<SessionObject>& sessions);
+  void selectPatches(const SessionObject& po, std::vector<SessionObject>& sessions);
+  void store(const SessionObject& so);
+  void remove(const SessionObject& so);
   void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);
 };
 

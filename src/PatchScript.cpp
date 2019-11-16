@@ -99,20 +99,16 @@ PolySynth* PatchScript::getPolySynth() {
 	return poly_;
 }
 
-void PatchScript::listPatches(std::vector<SessionObject>& patches) {
-	store_->list(patches);
+void PatchScript::list(std::vector<SessionObject>& list) {
+	store_->list(list);
 }
 
-void PatchScript::selectPatches(const SessionObject& po, std::vector<SessionObject>& patches) {
-	store_->select(po,patches);
+void PatchScript::store(const SessionObject& so) {
+	store_->store(so);
 }
 
-void PatchScript::storePatch(const SessionObject& po) {
-	store_->store(po);
-}
-
-void PatchScript::deletePatches(const SessionObject& po) {
-	store_->remove(po);
+void PatchScript::remove(const SessionObject& so) {
+	store_->remove(so);
 }
 
 void PatchScript::fill(float *outData,  unsigned int numFrames, unsigned int numChannels) {

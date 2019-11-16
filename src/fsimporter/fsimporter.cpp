@@ -20,11 +20,11 @@ int main(int argc, char** argv) {
 
 	FileStore store(outDir.string());
 
-	std::vector<SessionObject> retrievedPatches;
-	store.retrieve(retrievedPatches);
+	std::vector<SessionObject> retrievedSessions;
+	store.retrieve(retrievedSessions);
 
-	for(const auto& po : retrievedPatches) {
-		pscript.storePatch(po);
+	for(const auto& po : retrievedSessions) {
+		pscript.store(po);
 	}
 
 	return 0;

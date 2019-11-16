@@ -12,7 +12,7 @@ class RevFileReader {
 public:
 	RevFileReader(const std::string& name, std::istream& is);
 	virtual ~RevFileReader();
-	bool read(SessionObject& po);
+	bool read(SessionObject& so);
 };
 
 } /* namespace patchscript */

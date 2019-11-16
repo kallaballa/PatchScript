@@ -17,7 +17,7 @@ class RevFileWriter {
 public:
 	RevFileWriter(std::ostream& os);
 	virtual ~RevFileWriter();
-	void write(const SessionObject& po);
+	void write(const SessionObject& so);
 };
 
 } /* namespace patchscript */

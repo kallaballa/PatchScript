@@ -9,17 +9,18 @@ MetFileReader::MetFileReader(std::istream& is) : in_(is) {
 MetFileReader::~MetFileReader() {
 }
 
-void MetFileReader::read(SessionObject& po) {
+void MetFileReader::read(SessionObject& so) {
 	auto metaMap = read_key_value(in_);
-	po.revision_ = std::atoll(metaMap["revision"].c_str());
-	po.runtimeName_ = metaMap["runtimeName"];
-	po.runtimeVersion_ = metaMap["runtimeVersion"];
-	po.description_= metaMap["description"];
-	po.date_ = std::atoll(metaMap["date"].c_str());
-	po.layout_ = metaMap["layout"];
-	po.parameters_ = metaMap["parameters"];
-	po.keyboardBindings_ = metaMap["keyboardBindings"];
-	po.midiBindings_= metaMap["midiBindings"];
+	so.author_ = std::atoll(metaMap["author"].c_str());
+	so.revision_ = std::atoll(metaMap["revision"].c_str());
+	so.runtimeName_ = metaMap["runtimeName"];
+	so.runtimeVersion_ = metaMap["runtimeVersion"];
+	so.description_= metaMap["description"];
+	so.date_ = std::atoll(metaMap["date"].c_str());
+	so.layout_ = metaMap["layout"];
+	so.parameters_ = metaMap["parameters"];
+	so.keyboardBindings_ = metaMap["keyboardBindings"];
+	so.midiBindings_= metaMap["midiBindings"];
 }
 
 } /* namespace patchscript */

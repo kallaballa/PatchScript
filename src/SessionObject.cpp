@@ -2,17 +2,18 @@
 
 namespace patchscript {
 
-std::ostream& operator<<(std::ostream& os, const SessionObject& po) {
-	os << "name=" << po.name_ << '\n';
-	os << "revision=" << po.revision_ << '\n';
-	os << "runtimeName=" << po.runtimeName_ << '\n';
-	os << "runtimeVersion=" << po.runtimeVersion_ << '\n';
-	os << "description=" << po.description_ << '\n';
-	os << "date=" << po.date_ << '\n';
-	os << "layout=" << po.layout_ << '\n';
-	os << "parameters=" << po.parameters_ << '\n';
-	os << "keyboardBindings=" << po.keyboardBindings_ << '\n';
-	os << "midiBindings=" << po.midiBindings_ << std::endl;
+std::ostream& operator<<(std::ostream& os, const SessionObject& so) {
+	os << "name=" << so.name_ << '\n';
+	os << "author=" << so.author_ << '\n';
+	os << "revision=" << so.revision_ << '\n';
+	os << "runtimeName=" << so.runtimeName_ << '\n';
+	os << "runtimeVersion=" << so.runtimeVersion_ << '\n';
+	os << "description=" << so.description_ << '\n';
+	os << "date=" << so.date_ << '\n';
+	os << "layout=" << so.layout_ << '\n';
+	os << "parameters=" << so.parameters_ << '\n';
+	os << "keyboardBindings=" << so.keyboardBindings_ << '\n';
+	os << "midiBindings=" << so.midiBindings_ << std::endl;
 	return os;
 }
 

@@ -21,9 +21,9 @@ class SqlStore {
 	public:
 	SqlStore(const string& dbfile);
 	virtual ~SqlStore();
-	void store(const SessionObject& po);
-	void select(const SessionObject& po, std::vector<SessionObject>& result);
-	void remove(const SessionObject& po);
+	void store(const SessionObject& so);
+	void select(const SessionObject& so, std::vector<SessionObject>& result);
+	void remove(const SessionObject& so);
 	void list(std::vector<SessionObject>& result);
 
 };

@@ -12,6 +12,7 @@ namespace patchscript {
 const string CREATE_SESSIONS = R"_STATEMENT_(
 		CREATE TABLE IF NOT EXISTS sessions (
 	    name TEXT NOT NULL,
+	    author TEXT NOT NULL,
 	    revision INTEGER NOT NULL,
 	    runtimeName TEXT NOT NULL,
 	    runtimeVersion TEXT NOT NULL,
@@ -22,13 +23,14 @@ const string CREATE_SESSIONS = R"_STATEMENT_(
 			parameters TEXT NULL,
 			keyboardBindings TEXT NULL,
 			midiBindings TEXT NULL,
-			PRIMARY KEY(name,revision)
+			PRIMARY KEY(name,author,evision)
 		);
 		)_STATEMENT_";
 
 const string CREATE_TRASH = R"_STATEMENT_(
 		CREATE TABLE IF NOT EXISTS trash (
 	    name TEXT NOT NULL,
+	    author TEXT NOT NULL,
 	    revision INTEGER NOT NULL,
 	    runtimeName TEXT NOT NULL,
 	    runtimeVersion TEXT NOT NULL,
@@ -42,11 +44,11 @@ const string CREATE_TRASH = R"_STATEMENT_(
 		);
 		)_STATEMENT_";
 
-const string INSERT_SESSION = "INSERT INTO sessions VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+const string INSERT_SESSION = "INSERT INTO sessions VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 const string INSERT_TRASH = "INSERT INTO trash ";
-const string SELECT_ALL_SESSIONS = "SELECT * FROM sessions ORDER BY name, date;";
+const string SELECT_ALL_SESSIONS = "SELECT * FROM sessions ORDER BY name, author, date;";
 const string SELECT_SESSIONS = "SELECT * FROM sessions ";
-const string SELECT_MAX_REVISION = "SELECT max(revision) FROM sessions WHERE name == ?;";
+const string SELECT_MAX_REVISION = "SELECT max(revision) FROM sessions WHERE name == ? and author == ?;";
 const string DELETE_SESSIONS = "DELETE FROM sessions ";
 
 SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
@@ -73,44 +75,45 @@ SqlStore::~SqlStore() {
 	db_.close();
 }
 
-void SqlStore::store(const SessionObject& po) {
+void SqlStore::store(const SessionObject& so) {
 	db_.update("BEGIN TRANSACTION;");
 	try {
 		stmtSelectMaxRevision_->reset();
-		stmtSelectMaxRevision_->bind(1, po.name_);
+		stmtSelectMaxRevision_->bind(1, so.name_);
 
 		int64_t revision = 0;
 		if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
 			revision = stmtSelectMaxRevision_->column_int64(0) + 1;
 		}
 		stmtInsertSession_->reset();
-		stmtInsertSession_->bind(1, po.name_);
-		stmtInsertSession_->bind(2, revision);
-		stmtInsertSession_->bind(3, po.runtimeName_);
-		stmtInsertSession_->bind(4, po.runtimeVersion_);
-		stmtInsertSession_->bind(5, po.description_);
-		stmtInsertSession_->bind(6, po.code_);
-		stmtInsertSession_->bind(7, po.date_);
+		stmtInsertSession_->bind(1, so.name_);
+		stmtInsertSession_->bind(2, so.author_);
+		stmtInsertSession_->bind(3, revision);
+		stmtInsertSession_->bind(4, so.runtimeName_);
+		stmtInsertSession_->bind(5, so.runtimeVersion_);
+		stmtInsertSession_->bind(6, so.description_);
+		stmtInsertSession_->bind(7, so.code_);
+		stmtInsertSession_->bind(8, so.date_);
 
-		if (!po.layout_.empty())
-			stmtInsertSession_->bind(8, po.layout_);
-		else
-			stmtInsertSession_->bind(8);
-
-		if (!po.parameters_.empty())
-			stmtInsertSession_->bind(9, po.parameters_);
+		if (!so.layout_.empty())
+			stmtInsertSession_->bind(9, so.layout_);
 		else
 			stmtInsertSession_->bind(9);
 
-		if (!po.keyboardBindings_.empty())
-			stmtInsertSession_->bind(10, po.keyboardBindings_);
+		if (!so.parameters_.empty())
+			stmtInsertSession_->bind(10, so.parameters_);
 		else
 			stmtInsertSession_->bind(10);
 
-		if (!po.midiBindings_.empty())
-			stmtInsertSession_->bind(11, po.midiBindings_);
+		if (!so.keyboardBindings_.empty())
+			stmtInsertSession_->bind(11, so.keyboardBindings_);
 		else
 			stmtInsertSession_->bind(11);
+
+		if (!so.midiBindings_.empty())
+			stmtInsertSession_->bind(12, so.midiBindings_);
+		else
+			stmtInsertSession_->bind(12);
 		stmtInsertSession_->step();
 		db_.update("COMMIT;");
 	} catch (std::exception& ex) {
@@ -118,65 +121,7 @@ void SqlStore::store(const SessionObject& po) {
 		throw;
 	}
 }
-
-void SqlStore::select(const SessionObject& po, std::vector<SessionObject>& result) {
-	std::ostringstream ss;
-	ss << SELECT_SESSIONS;
-	std::vector<string> whereClauses;
-	if(!po.isEmpty()) {
-		ss << "WHERE ";
-		if(!po.name_.empty())
-			whereClauses.push_back(string("name LIKE '%") + po.name_ + "%'");
-		if(po.revision_ != -1)
-			whereClauses.push_back(string("revision == ") + std::to_string(po.revision_));
-		if(!po.runtimeName_.empty())
-			whereClauses.push_back(string("runtimeName LIKE '%") + po.runtimeName_ + "%'");
-		if(!po.runtimeVersion_.empty())
-			whereClauses.push_back(string("runtimeVersion LIKE '%") + po.runtimeVersion_ + "%'");
-		if(!po.description_.empty())
-			whereClauses.push_back(string("description LIKE '%") + po.description_ + "%'");
-		if(!po.code_.empty())
-			whereClauses.push_back(string("code LIKE '%") + po.code_ + "%'");
-		if(po.date_ != -1)
-			whereClauses.push_back(string("date > ") + std::to_string(po.date_));
-
-		for(size_t i = 0; i < whereClauses.size(); ++i) {
-			ss << whereClauses[i];
-			if(i < whereClauses.size() - 1)
-				ss << " AND ";
-		}
-	}
-
-	ss << " GROUP BY name ORDER BY date;";
-
-	auto stmt = db_.query(ss.str());
-
-	while (stmt.step() == sqlite::Statement::ROW) {
-		SessionObject po{stmt.column_string(0),
-			stmt.column_int64(1),
-			stmt.column_string(2),
-			stmt.column_string(3),
-			stmt.column_string(4),
-			stmt.column_string(5),
-			stmt.column_int64(6),
-			"",
-			"",
-			"",
-			""};
-
-		if(stmt.column_type(7) != sqlite::Statement::NUL)
-			po.layout_ = stmt.column_string(7);
-		if(stmt.column_type(8) != sqlite::Statement::NUL)
-			po.parameters_ = stmt.column_string(8);
-		if(stmt.column_type(9) != sqlite::Statement::NUL)
-			po.keyboardBindings_ = stmt.column_string(9);
-		if(stmt.column_type(10) != sqlite::Statement::NUL)
-			po.midiBindings_ = stmt.column_string(10);
-		result.push_back(po);
-	}
-}
-
-void SqlStore::remove(const SessionObject& po) {
+void SqlStore::remove(const SessionObject& so) {
 	db_.update("BEGIN TRANSACTION;");
 	std::ostringstream ssWhere;
 	std::ostringstream ssDelete;
@@ -186,22 +131,24 @@ void SqlStore::remove(const SessionObject& po) {
 	ssDelete << DELETE_SESSIONS;
 	ssInsert << INSERT_TRASH << SELECT_SESSIONS;
 
-	if(!po.isEmpty()) {
+	if(!so.isEmpty()) {
 		ssWhere << "WHERE ";
-		if(!po.name_.empty())
-			whereClauses.push_back(string("name == '") + po.name_ + "'");
-		if(po.revision_ != -1)
-			whereClauses.push_back(string("revision == ") + std::to_string(po.revision_));
-		if(!po.runtimeName_.empty())
-			whereClauses.push_back(string("runtimeName == '") + po.runtimeName_ + "'");
-		if(!po.runtimeVersion_.empty())
-			whereClauses.push_back(string("runtimeVersion == '") + po.runtimeVersion_ + "'");
-		if(!po.description_.empty())
-			whereClauses.push_back(string("description == '") + po.description_ + "'");
-		if(!po.code_.empty())
-			whereClauses.push_back(string("code == '") + po.code_ + "'");
-		if(po.date_ != -1)
-			whereClauses.push_back(string("date > ") + std::to_string(po.date_));
+		if(!so.name_.empty())
+			whereClauses.push_back(string("name == '") + so.name_ + "'");
+		if(!so.author_.empty())
+			whereClauses.push_back(string("author == '") + so.author_ + "'");
+		if(so.revision_ != -1)
+			whereClauses.push_back(string("revision == ") + std::to_string(so.revision_));
+		if(!so.runtimeName_.empty())
+			whereClauses.push_back(string("runtimeName == '") + so.runtimeName_ + "'");
+		if(!so.runtimeVersion_.empty())
+			whereClauses.push_back(string("runtimeVersion == '") + so.runtimeVersion_ + "'");
+		if(!so.description_.empty())
+			whereClauses.push_back(string("description == '") + so.description_ + "'");
+		if(!so.code_.empty())
+			whereClauses.push_back(string("code == '") + so.code_ + "'");
+		if(so.date_ != -1)
+			whereClauses.push_back(string("date > ") + std::to_string(so.date_));
 
 		for(size_t i = 0; i < whereClauses.size(); ++i) {
 			ssWhere << whereClauses[i];
@@ -229,25 +176,26 @@ void SqlStore::list(std::vector<SessionObject>& result) {
 
 	while (stmtSelectAllSessions_->step() == sqlite::Statement::ROW) {
 		SessionObject po{stmtSelectAllSessions_->column_string(0),
-			stmtSelectAllSessions_->column_int64(1),
-			stmtSelectAllSessions_->column_string(2),
+			stmtSelectAllSessions_->column_string(1),
+			stmtSelectAllSessions_->column_int64(2),
 			stmtSelectAllSessions_->column_string(3),
 			stmtSelectAllSessions_->column_string(4),
 			stmtSelectAllSessions_->column_string(5),
-			stmtSelectAllSessions_->column_int64(6),
+			stmtSelectAllSessions_->column_string(6),
+			stmtSelectAllSessions_->column_int64(7),
 			"",
 			"",
 			"",
 			""};
 
-		if(stmtSelectAllSessions_->column_type(7) != sqlite::Statement::NUL)
-			po.layout_ = stmtSelectAllSessions_->column_string(7);
 		if(stmtSelectAllSessions_->column_type(8) != sqlite::Statement::NUL)
-			po.parameters_ = stmtSelectAllSessions_->column_string(8);
+			po.layout_ = stmtSelectAllSessions_->column_string(8);
 		if(stmtSelectAllSessions_->column_type(9) != sqlite::Statement::NUL)
-			po.keyboardBindings_ = stmtSelectAllSessions_->column_string(9);
+			po.parameters_ = stmtSelectAllSessions_->column_string(9);
 		if(stmtSelectAllSessions_->column_type(10) != sqlite::Statement::NUL)
-			po.midiBindings_ = stmtSelectAllSessions_->column_string(10);
+			po.keyboardBindings_ = stmtSelectAllSessions_->column_string(10);
+		if(stmtSelectAllSessions_->column_type(11) != sqlite::Statement::NUL)
+			po.midiBindings_ = stmtSelectAllSessions_->column_string(11);
 		result.push_back(po);
 	}
 }

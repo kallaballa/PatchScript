@@ -17,8 +17,8 @@ PatFileWriter::PatFileWriter(std::ostream& os) : out_(os) {
 PatFileWriter::~PatFileWriter() {
 }
 
-void PatFileWriter::write(const SessionObject& po) {
-	out_ << po.code_;
+void PatFileWriter::write(const SessionObject& so) {
+	out_ << so.code_;
 }
 
 } /* namespace patchscript */

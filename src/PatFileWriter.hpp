@@ -10,7 +10,7 @@ class PatFileWriter {
 public:
 	PatFileWriter(std::ostream& os);
 	virtual ~PatFileWriter();
-	void write(const SessionObject& po);
+	void write(const SessionObject& so);
 };
 
 } /* namespace patchscript */

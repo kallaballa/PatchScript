@@ -9,8 +9,8 @@ PatFileReader::PatFileReader(std::istream& is) : in_(is) {
 PatFileReader::~PatFileReader() {
 }
 
-void PatFileReader::read(SessionObject& po) {
-	po.code_ = read_fully(in_);
+void PatFileReader::read(SessionObject& so) {
+	so.code_ = read_fully(in_);
 }
 
 } /* namespace patchscript */

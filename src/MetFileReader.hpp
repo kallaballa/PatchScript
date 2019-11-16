@@ -10,7 +10,7 @@ class MetFileReader {
 public:
 	MetFileReader(std::istream& is);
 	virtual ~MetFileReader();
-	void read(SessionObject& po);
+	void read(SessionObject& so);
 };
 
 } /* namespace patchscript */

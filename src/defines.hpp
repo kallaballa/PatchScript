@@ -9,7 +9,7 @@
 #define DEFAULT_HOME_DIR ".patchscript/"
 #define DEFAULT_DATA_DIR ".patchscript/data/"
 #define DEFAULT_LOG_DIR ".patchscript/logs/"
-#define DEFAULT_DB_FILE ".patchscript/data/patches.db"
+#define DEFAULT_DB_FILE ".patchscript/data/sessions.db"
 
 
 #endif /* SRC_DEFINES_HPP_ */

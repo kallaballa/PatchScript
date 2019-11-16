@@ -10,7 +10,7 @@ class PatFileReader {
 public:
 	PatFileReader(std::istream& is);
 	virtual ~PatFileReader();
-	void read(SessionObject& po);
+	void read(SessionObject& so);
 };
 
 } /* namespace patchscript */
