@@ -80,6 +80,7 @@ void SqlStore::store(const SessionObject& so) {
 	try {
 		stmtSelectMaxRevision_->reset();
 		stmtSelectMaxRevision_->bind(1, so.name_);
+		stmtSelectMaxRevision_->bind(2, so.author_);
 
 		int64_t revision = 0;
 		if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
