@@ -23,7 +23,7 @@ const string CREATE_SESSIONS = R"_STATEMENT_(
 			parameters TEXT NULL,
 			keyboardBindings TEXT NULL,
 			midiBindings TEXT NULL,
-			PRIMARY KEY(name,author,evision)
+			PRIMARY KEY(name,author,revision)
 		);
 		)_STATEMENT_";
 
