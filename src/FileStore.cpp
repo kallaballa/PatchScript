@@ -17,7 +17,7 @@ FileStore::FileStore(const string& strDirectory) : fsDir_(strDirectory) {
 FileStore::~FileStore() {
 }
 
-void FileStore::store(std::vector<PatchObject> list) {
+void FileStore::store(std::vector<SessionObject> list) {
 	std::reverse(list.begin(), list.end());
 	string lastName;
 
@@ -53,10 +53,10 @@ void FileStore::store(std::vector<PatchObject> list) {
 }
 
 
-void FileStore::retrieve(std::vector<PatchObject>& list) {
+void FileStore::retrieve(std::vector<SessionObject>& list) {
 	for (const auto & entry : fs::directory_iterator(fsDir_)) {
 		if(entry.path().extension().string()  == ".pat") {
-			PatchObject po;
+			SessionObject po;
 			po.name_ = entry.path().stem().string();
 
 			fs::path codePath(entry.path());
@@ -73,10 +73,10 @@ void FileStore::retrieve(std::vector<PatchObject>& list) {
 			metReader.read(po);
 			list.push_back(po);
 
-			PatchObject poRev;
+			SessionObject poRev;
 			while(revReader.read(poRev)) {
 				list.push_back(poRev);
-				poRev = PatchObject();
+				poRev = SessionObject();
 			}
 		}
 	}

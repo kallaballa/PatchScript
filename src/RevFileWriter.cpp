@@ -8,7 +8,7 @@ RevFileWriter::RevFileWriter(std::ostream& os) : out_(os) {
 RevFileWriter::~RevFileWriter() {
 }
 
-void RevFileWriter::write(const PatchObject& po) {
+void RevFileWriter::write(const SessionObject& po) {
 		out_ << "revision=" << po.revision_ << '\n';
 		out_ << "runtimeName=" << po.runtimeName_ << '\n';
 		out_ << "runtimeVersion=" << po.runtimeVersion_ << '\n';

@@ -9,8 +9,8 @@
 
 namespace patchscript {
 
-const string CREATE_PATCHES = R"_STATEMENT_(
-		CREATE TABLE IF NOT EXISTS patches (
+const string CREATE_SESSIONS = R"_STATEMENT_(
+		CREATE TABLE IF NOT EXISTS sessions (
 	    name TEXT NOT NULL,
 	    revision INTEGER NOT NULL,
 	    runtimeName TEXT NOT NULL,
@@ -42,52 +42,38 @@ const string CREATE_TRASH = R"_STATEMENT_(
 		);
 		)_STATEMENT_";
 
-const string INSERT_PATCH = "INSERT INTO patches VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+const string INSERT_SESSION = "INSERT INTO sessions VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 const string INSERT_TRASH = "INSERT INTO trash ";
-const string SELECT_ALL_PATCHES = "SELECT * FROM patches ORDER BY name, date;";
-const string SELECT_PATCHES = "SELECT * FROM patches ";
-const string SELECT_MAX_REVISION = "SELECT max(revision) FROM patches WHERE name == ?;";
-const string DELETE_PATCHES = "DELETE FROM patches ";
-
-std::ostream& operator<<(std::ostream& os, const PatchObject& po) {
-	os << "name=" << po.name_ << '\n';
-	os << "revision=" << po.revision_ << '\n';
-	os << "runtimeName=" << po.runtimeName_ << '\n';
-	os << "runtimeVersion=" << po.runtimeVersion_ << '\n';
-	os << "description=" << po.description_ << '\n';
-	os << "date=" << po.date_ << '\n';
-	os << "layout=" << po.layout_ << '\n';
-	os << "parameters=" << po.parameters_ << '\n';
-	os << "keyboardBindings=" << po.keyboardBindings_ << '\n';
-	os << "midiBindings=" << po.midiBindings_ << std::endl;
-	return os;
-}
+const string SELECT_ALL_SESSIONS = "SELECT * FROM sessions ORDER BY name, date;";
+const string SELECT_SESSIONS = "SELECT * FROM sessions ";
+const string SELECT_MAX_REVISION = "SELECT max(revision) FROM sessions WHERE name == ?;";
+const string DELETE_SESSIONS = "DELETE FROM sessions ";
 
 SqlStore::SqlStore(const string& dbfile) : db_(dbfile) {
-	stmtCreatePatches_ = new sqlite::Statement(db_._db, CREATE_PATCHES);
+	stmtCreateSessions_ = new sqlite::Statement(db_._db, CREATE_SESSIONS);
 	stmtCreateTrash_ = new sqlite::Statement(db_._db, CREATE_TRASH);
 
-	//create patches and trash table if the db is empty
-	stmtCreatePatches_->step();
+	//create session and trash table if the db is empty
+	stmtCreateSessions_->step();
 	stmtCreateTrash_->step();
 
-	stmtInsertPatch_ = new sqlite::Statement(db_._db, INSERT_PATCH);
-	stmtSelectAllPatches_ = new sqlite::Statement(db_._db, SELECT_ALL_PATCHES);
-	stmtSelectPatches_ = new sqlite::Statement(db_._db, SELECT_PATCHES);
+	stmtInsertSession_ = new sqlite::Statement(db_._db, INSERT_SESSION);
+	stmtSelectAllSessions_ = new sqlite::Statement(db_._db, SELECT_ALL_SESSIONS);
+	stmtSelectSessions_ = new sqlite::Statement(db_._db, SELECT_SESSIONS);
 	stmtSelectMaxRevision_ = new sqlite::Statement(db_._db, SELECT_MAX_REVISION);
 }
 
 SqlStore::~SqlStore() {
-	delete(stmtCreatePatches_);
+	delete(stmtCreateSessions_);
 	delete(stmtCreateTrash_);
-	delete(stmtInsertPatch_);
-	delete(stmtSelectAllPatches_);
-	delete(stmtSelectPatches_);
+	delete(stmtInsertSession_);
+	delete(stmtSelectAllSessions_);
+	delete(stmtSelectSessions_);
 	delete(stmtSelectMaxRevision_);
 	db_.close();
 }
 
-void SqlStore::storePatch(const PatchObject& po) {
+void SqlStore::store(const SessionObject& po) {
 	db_.update("BEGIN TRANSACTION;");
 	try {
 		stmtSelectMaxRevision_->reset();
@@ -97,35 +83,35 @@ void SqlStore::storePatch(const PatchObject& po) {
 		if (stmtSelectMaxRevision_->step() == sqlite::Statement::ROW) {
 			revision = stmtSelectMaxRevision_->column_int64(0) + 1;
 		}
-		stmtInsertPatch_->reset();
-		stmtInsertPatch_->bind(1, po.name_);
-		stmtInsertPatch_->bind(2, revision);
-		stmtInsertPatch_->bind(3, po.runtimeName_);
-		stmtInsertPatch_->bind(4, po.runtimeVersion_);
-		stmtInsertPatch_->bind(5, po.description_);
-		stmtInsertPatch_->bind(6, po.code_);
-		stmtInsertPatch_->bind(7, po.date_);
+		stmtInsertSession_->reset();
+		stmtInsertSession_->bind(1, po.name_);
+		stmtInsertSession_->bind(2, revision);
+		stmtInsertSession_->bind(3, po.runtimeName_);
+		stmtInsertSession_->bind(4, po.runtimeVersion_);
+		stmtInsertSession_->bind(5, po.description_);
+		stmtInsertSession_->bind(6, po.code_);
+		stmtInsertSession_->bind(7, po.date_);
 
 		if (!po.layout_.empty())
-			stmtInsertPatch_->bind(8, po.layout_);
+			stmtInsertSession_->bind(8, po.layout_);
 		else
-			stmtInsertPatch_->bind(8);
+			stmtInsertSession_->bind(8);
 
 		if (!po.parameters_.empty())
-			stmtInsertPatch_->bind(9, po.parameters_);
+			stmtInsertSession_->bind(9, po.parameters_);
 		else
-			stmtInsertPatch_->bind(9);
+			stmtInsertSession_->bind(9);
 
 		if (!po.keyboardBindings_.empty())
-			stmtInsertPatch_->bind(10, po.keyboardBindings_);
+			stmtInsertSession_->bind(10, po.keyboardBindings_);
 		else
-			stmtInsertPatch_->bind(10);
+			stmtInsertSession_->bind(10);
 
 		if (!po.midiBindings_.empty())
-			stmtInsertPatch_->bind(11, po.midiBindings_);
+			stmtInsertSession_->bind(11, po.midiBindings_);
 		else
-			stmtInsertPatch_->bind(11);
-		stmtInsertPatch_->step();
+			stmtInsertSession_->bind(11);
+		stmtInsertSession_->step();
 		db_.update("COMMIT;");
 	} catch (std::exception& ex) {
 		db_.update("ROLLBACK;");
@@ -133,9 +119,9 @@ void SqlStore::storePatch(const PatchObject& po) {
 	}
 }
 
-void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& result) {
+void SqlStore::select(const SessionObject& po, std::vector<SessionObject>& result) {
 	std::ostringstream ss;
-	ss << SELECT_PATCHES;
+	ss << SELECT_SESSIONS;
 	std::vector<string> whereClauses;
 	if(!po.isEmpty()) {
 		ss << "WHERE ";
@@ -166,7 +152,7 @@ void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& re
 	auto stmt = db_.query(ss.str());
 
 	while (stmt.step() == sqlite::Statement::ROW) {
-		PatchObject po{stmt.column_string(0),
+		SessionObject po{stmt.column_string(0),
 			stmt.column_int64(1),
 			stmt.column_string(2),
 			stmt.column_string(3),
@@ -190,15 +176,15 @@ void SqlStore::selectPatches(const PatchObject& po, std::vector<PatchObject>& re
 	}
 }
 
-void SqlStore::deletePatches(const PatchObject& po) {
+void SqlStore::remove(const SessionObject& po) {
 	db_.update("BEGIN TRANSACTION;");
 	std::ostringstream ssWhere;
 	std::ostringstream ssDelete;
 	std::ostringstream ssInsert;
 	std::vector<string> whereClauses;
 
-	ssDelete << DELETE_PATCHES;
-	ssInsert << INSERT_TRASH << SELECT_PATCHES;
+	ssDelete << DELETE_SESSIONS;
+	ssInsert << INSERT_TRASH << SELECT_SESSIONS;
 
 	if(!po.isEmpty()) {
 		ssWhere << "WHERE ";
@@ -238,30 +224,30 @@ void SqlStore::deletePatches(const PatchObject& po) {
 	}
 }
 
-void SqlStore::listPatches(std::vector<PatchObject>& result) {
-	stmtSelectAllPatches_->reset();
+void SqlStore::list(std::vector<SessionObject>& result) {
+	stmtSelectAllSessions_->reset();
 
-	while (stmtSelectAllPatches_->step() == sqlite::Statement::ROW) {
-		PatchObject po{stmtSelectAllPatches_->column_string(0),
-			stmtSelectAllPatches_->column_int64(1),
-			stmtSelectAllPatches_->column_string(2),
-			stmtSelectAllPatches_->column_string(3),
-			stmtSelectAllPatches_->column_string(4),
-			stmtSelectAllPatches_->column_string(5),
-			stmtSelectAllPatches_->column_int64(6),
+	while (stmtSelectAllSessions_->step() == sqlite::Statement::ROW) {
+		SessionObject po{stmtSelectAllSessions_->column_string(0),
+			stmtSelectAllSessions_->column_int64(1),
+			stmtSelectAllSessions_->column_string(2),
+			stmtSelectAllSessions_->column_string(3),
+			stmtSelectAllSessions_->column_string(4),
+			stmtSelectAllSessions_->column_string(5),
+			stmtSelectAllSessions_->column_int64(6),
 			"",
 			"",
 			"",
 			""};
 
-		if(stmtSelectAllPatches_->column_type(7) != sqlite::Statement::NUL)
-			po.layout_ = stmtSelectAllPatches_->column_string(7);
-		if(stmtSelectAllPatches_->column_type(8) != sqlite::Statement::NUL)
-			po.parameters_ = stmtSelectAllPatches_->column_string(8);
-		if(stmtSelectAllPatches_->column_type(9) != sqlite::Statement::NUL)
-			po.keyboardBindings_ = stmtSelectAllPatches_->column_string(9);
-		if(stmtSelectAllPatches_->column_type(10) != sqlite::Statement::NUL)
-			po.midiBindings_ = stmtSelectAllPatches_->column_string(10);
+		if(stmtSelectAllSessions_->column_type(7) != sqlite::Statement::NUL)
+			po.layout_ = stmtSelectAllSessions_->column_string(7);
+		if(stmtSelectAllSessions_->column_type(8) != sqlite::Statement::NUL)
+			po.parameters_ = stmtSelectAllSessions_->column_string(8);
+		if(stmtSelectAllSessions_->column_type(9) != sqlite::Statement::NUL)
+			po.keyboardBindings_ = stmtSelectAllSessions_->column_string(9);
+		if(stmtSelectAllSessions_->column_type(10) != sqlite::Statement::NUL)
+			po.midiBindings_ = stmtSelectAllSessions_->column_string(10);
 		result.push_back(po);
 	}
 }

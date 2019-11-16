@@ -19,8 +19,8 @@ class FileStore {
 public:
 	FileStore(const string& strDirectory);
 	virtual ~FileStore();
-	void store(std::vector<PatchObject> list);
-	void retrieve(std::vector<PatchObject>& list);
+	void store(std::vector<SessionObject> list);
+	void retrieve(std::vector<SessionObject>& list);
 };
 } /* namespace patchscript */
 

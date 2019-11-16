@@ -1,7 +1,7 @@
 #ifndef SRC_METFILEWRITER_HPP_
 #define SRC_METFILEWRITER_HPP_
 
-#include "SqlStore.hpp"
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -10,7 +10,7 @@ class MetFileWriter {
 public:
 	MetFileWriter(std::ostream& os);
 	virtual ~MetFileWriter();
-	void write(const PatchObject& po);
+	void write(const SessionObject& po);
 };
 
 } /* namespace patchscript */

@@ -1,8 +1,8 @@
 #ifndef SRC_REVFILEREADER_HPP_
 #define SRC_REVFILEREADER_HPP_
 
-#include "SqlStore.hpp"
 #include <string>
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -12,7 +12,7 @@ class RevFileReader {
 public:
 	RevFileReader(const std::string& name, std::istream& is);
 	virtual ~RevFileReader();
-	bool read(PatchObject& po);
+	bool read(SessionObject& po);
 };
 
 } /* namespace patchscript */

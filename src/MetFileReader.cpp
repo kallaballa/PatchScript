@@ -9,7 +9,7 @@ MetFileReader::MetFileReader(std::istream& is) : in_(is) {
 MetFileReader::~MetFileReader() {
 }
 
-void MetFileReader::read(PatchObject& po) {
+void MetFileReader::read(SessionObject& po) {
 	auto metaMap = read_key_value(in_);
 	po.revision_ = std::atoll(metaMap["revision"].c_str());
 	po.runtimeName_ = metaMap["runtimeName"];

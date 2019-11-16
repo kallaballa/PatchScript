@@ -1,7 +1,7 @@
 #ifndef SRC_PATFILEWRITER_HPP_
 #define SRC_PATFILEWRITER_HPP_
 
-#include "SqlStore.hpp"
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -10,7 +10,7 @@ class PatFileWriter {
 public:
 	PatFileWriter(std::ostream& os);
 	virtual ~PatFileWriter();
-	void write(const PatchObject& po);
+	void write(const SessionObject& po);
 };
 
 } /* namespace patchscript */

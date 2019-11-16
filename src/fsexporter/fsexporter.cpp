@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
 	PatchScript pscript;
 	pscript.init();
 
-	std::vector<PatchObject> storedPatches;
+	std::vector<SessionObject> storedPatches;
 	pscript.listPatches(storedPatches);
 
 	FileStore store(outDir.string());

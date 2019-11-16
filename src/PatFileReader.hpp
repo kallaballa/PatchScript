@@ -1,7 +1,7 @@
 #ifndef SRC_PATFILEREADER_HPP_
 #define SRC_PATFILEREADER_HPP_
 
-#include "SqlStore.hpp"
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -10,7 +10,7 @@ class PatFileReader {
 public:
 	PatFileReader(std::istream& is);
 	virtual ~PatFileReader();
-	void read(PatchObject& po);
+	void read(SessionObject& po);
 };
 
 } /* namespace patchscript */

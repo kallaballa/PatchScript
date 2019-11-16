@@ -11,7 +11,7 @@ RevFileReader::RevFileReader(const string& name, std::istream& is) : in_(is), na
 RevFileReader::~RevFileReader() {
 }
 
-bool RevFileReader::read(PatchObject& po) {
+bool RevFileReader::read(SessionObject& po) {
 	string metaRev;
 	if (!getline(in_, metaRev, (char) 0))
 		return false;

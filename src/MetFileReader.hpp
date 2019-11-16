@@ -1,7 +1,7 @@
 #ifndef SRC_METFILEREADER_HPP_
 #define SRC_METFILEREADER_HPP_
 
-#include "SqlStore.hpp"
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -10,7 +10,7 @@ class MetFileReader {
 public:
 	MetFileReader(std::istream& is);
 	virtual ~MetFileReader();
-	void read(PatchObject& po);
+	void read(SessionObject& po);
 };
 
 } /* namespace patchscript */

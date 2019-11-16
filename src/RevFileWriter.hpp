@@ -8,7 +8,7 @@
 #ifndef SRC_REVFILEWRITER_HPP_
 #define SRC_REVFILEWRITER_HPP_
 
-#include "SqlStore.hpp"
+#include "SessionObject.hpp"
 
 namespace patchscript {
 
@@ -17,7 +17,7 @@ class RevFileWriter {
 public:
 	RevFileWriter(std::ostream& os);
 	virtual ~RevFileWriter();
-	void write(const PatchObject& po);
+	void write(const SessionObject& po);
 };
 
 } /* namespace patchscript */

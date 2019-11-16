@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
 
 	FileStore store(outDir.string());
 
-	std::vector<PatchObject> retrievedPatches;
+	std::vector<SessionObject> retrievedPatches;
 	store.retrieve(retrievedPatches);
 
 	for(const auto& po : retrievedPatches) {
