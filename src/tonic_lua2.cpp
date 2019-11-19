@@ -137,4 +137,9 @@ void bindings2(kaguya::State& state) {
 			.addOverloadedFunctions("input",
 				(ControlMidiToFreq (ControlMidiToFreq::*)(float))&ControlMidiToFreq::input,
 				(ControlMidiToFreq (ControlMidiToFreq::*)(ControlGenerator))&ControlMidiToFreq::input)));
+
+	state["ControlDbToLinear"].setClass(make_control_conditioner(state,
+			kaguya::UserdataMetatable<ControlDbToLinear,TemplatedControlConditioner<Tonic::ControlDbToLinear, Tonic_::ControlDbToLinear_>>()
+			.setConstructors<ControlDbToLinear()>()
+			));
 }

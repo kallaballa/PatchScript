@@ -77,6 +77,20 @@ template<class Tclass, class Tclass_> kaguya::UserdataMetatable<Tclass,Templated
 	return make_control_operators(tbl);
 }
 
+template<class Tclass, class Tclass_> kaguya::UserdataMetatable<Tclass,TemplatedControlConditioner<Tclass, Tclass_>> make_control_conditioner(kaguya::State& state, kaguya::UserdataMetatable<Tclass,TemplatedControlConditioner<Tclass, Tclass_>>& tbl) {
+	typedef TemplatedControlGenerator<Tclass_> TG_t;
+	state[string("TemplatedControlGenerator") + typeid(Tclass).name()].setClass(
+				kaguya::UserdataMetatable<TG_t,ControlGenerator>());
+
+	typedef TemplatedControlConditioner<Tclass, Tclass_> TG1_t;
+	state[string("TemplatedControlConditioner") + typeid(Tclass).name()].setClass(
+				kaguya::UserdataMetatable<TG1_t,TG_t>()
+				.addOverloadedFunctions("input",
+						(Tclass (TG1_t::*)(float))&Tclass::input,
+						(Tclass (TG1_t::*)(ControlGenerator))&Tclass::input));
+	return make_control_operators(tbl);
+}
+
 template<class Tclass, class Tclass_> kaguya::UserdataMetatable<Tclass,TemplatedWetDryEffect<Tclass,Tclass_>> make_wet_dry(kaguya::State& state, kaguya::UserdataMetatable<Tclass,TemplatedWetDryEffect<Tclass, Tclass_>>& tbl) {
 	typedef TemplatedGenerator<Tclass_> TG_t;
 	state[string("TemplatedGenerator") + typeid(Tclass).name()].setClass(

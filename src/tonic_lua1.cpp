@@ -48,6 +48,32 @@ void bindings1(kaguya::State& state) {
 							(LPF24& (LPF24::*)(float))&LPF24::Q)
 						));
 
+	state["BPF12"].setClass(make_generator(state,
+			kaguya::UserdataMetatable<BPF12, TemplatedGenerator<Tonic_::BPF12_>>()
+			.setConstructors<BPF12()>()
+			.addFunction("normalizesGain", (BPF12& (BPF12::*)(bool))&BPF12::normalizesGain)
+			.addFunction("input", (BPF12& (BPF12::*)(Generator))&BPF12::input)
+			.addOverloadedFunctions("cutoff",
+					(BPF12& (BPF12::*)(Generator))&BPF12::cutoff,
+					(BPF12& (BPF12::*)(float))&BPF12::cutoff)
+					.addOverloadedFunctions("Q",
+							(BPF12& (BPF12::*)(Generator))&BPF12::Q,
+							(BPF12& (BPF12::*)(float))&BPF12::Q)
+						));
+
+	state["BPF24"].setClass(make_generator(state,
+			kaguya::UserdataMetatable<BPF24, TemplatedGenerator<Tonic_::BPF24_>>()
+			.setConstructors<BPF24()>()
+			.addFunction("normalizesGain", (BPF24& (BPF24::*)(bool))&BPF24::normalizesGain)
+			.addFunction("input", (BPF24& (BPF24::*)(Generator))&BPF24::input)
+			.addOverloadedFunctions("cutoff",
+					(BPF24& (BPF24::*)(Generator))&BPF24::cutoff,
+					(BPF24& (BPF24::*)(float))&BPF24::cutoff)
+					.addOverloadedFunctions("Q",
+							(BPF24& (BPF24::*)(Generator))&BPF24::Q,
+							(BPF24& (BPF24::*)(float))&BPF24::Q)
+						));
+
 	state["ADSR"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<ADSR, TemplatedGenerator<Tonic_::ADSR_>>()
 			.setConstructors<ADSR()>()
@@ -76,8 +102,8 @@ void bindings1(kaguya::State& state) {
 					(ADSR& (ADSR::*)(float))&ADSR::legato,
 					(ADSR& (ADSR::*)(ControlGenerator))&ADSR::legato)));
 
-	state["Compressor"].setClass(make_generator(state,
-			kaguya::UserdataMetatable<Compressor,TemplatedGenerator<Tonic_::Compressor_>>()
+	state["Compressor"].setClass(make_effect(state,
+			kaguya::UserdataMetatable<Compressor,TemplatedEffect<Tonic::Compressor, Tonic_::Compressor_>>()
 			.setConstructors<Compressor()>()
 			.addFunction("input", (Compressor& (Compressor::*)(Generator))&Compressor::input)
 			.addFunction("audioInput", &Compressor::audioInput)
