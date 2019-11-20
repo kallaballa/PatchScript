@@ -145,6 +145,44 @@ void bindings1(kaguya::State& state) {
 					(StereoDelay& (StereoDelay::*)(ControlGenerator))&StereoDelay::delayTimeRight)
 					));
 
+	state["Reverb"].setClass(make_wet_dry(state,
+			kaguya::UserdataMetatable<Reverb,TemplatedWetDryEffect<Reverb,Tonic_::Reverb_>>()
+			.setConstructors<Reverb()>()
+			.addOverloadedFunctions("preDelayTime",
+					(Reverb& (Reverb::*)(float))&Reverb::preDelayTime,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::preDelayTime)
+			.addOverloadedFunctions("bypassInputFilter",
+					(Reverb& (Reverb::*)(float))&Reverb::bypassInputFilter,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::bypassInputFilter)
+			.addOverloadedFunctions("inputLPFCutoff",
+					(Reverb& (Reverb::*)(float))&Reverb::inputLPFCutoff,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::inputLPFCutoff)
+			.addOverloadedFunctions("inputHPFCutoff",
+					(Reverb& (Reverb::*)(float))&Reverb::inputHPFCutoff,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::inputHPFCutoff)
+			.addOverloadedFunctions("density",
+					(Reverb& (Reverb::*)(float))&Reverb::density,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::density)
+			.addOverloadedFunctions("roomShape",
+					(Reverb& (Reverb::*)(float))&Reverb::roomShape,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::roomShape)
+			.addOverloadedFunctions("roomSize",
+					(Reverb& (Reverb::*)(float))&Reverb::roomSize,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::roomSize)
+			.addOverloadedFunctions("decayTime",
+					(Reverb& (Reverb::*)(float))&Reverb::decayTime,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::decayTime)
+			.addOverloadedFunctions("decayLPFCutoff",
+					(Reverb& (Reverb::*)(float))&Reverb::decayLPFCutoff,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::decayLPFCutoff)
+			.addOverloadedFunctions("decayHPFCutoff",
+					(Reverb& (Reverb::*)(float))&Reverb::decayHPFCutoff,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::decayHPFCutoff)
+			.addOverloadedFunctions("stereoWidth",
+					(Reverb& (Reverb::*)(float))&Reverb::stereoWidth,
+					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::stereoWidth)
+					));
+
 //	state["LV2Plugin"].setClass(make_wet_dry(state,
 //			kaguya::UserdataMetatable<LV2Effect,TemplatedWetDryEffect<LV2Effect,Tonic_::LV2Effect_>>()
 //			.setConstructors<LV2Effect(const char*)>()
