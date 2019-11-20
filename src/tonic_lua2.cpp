@@ -131,6 +131,26 @@ void bindings2(kaguya::State& state) {
 				(ControlSnapToScale (ControlSnapToScale::*)(float))&ControlSnapToScale::input,
 				(ControlSnapToScale (ControlSnapToScale::*)(ControlGenerator))&ControlSnapToScale::input)));
 
+	state["ControlStepper"].setClass(make_control(state,
+			kaguya::UserdataMetatable<ControlStepper,TemplatedControlGenerator<Tonic_::ControlStepper_>>()
+			.setConstructors<ControlStepper()>()
+			.addOverloadedFunctions("start",
+				(ControlStepper& (ControlStepper::*)(float))&ControlStepper::start,
+				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::start)
+			.addOverloadedFunctions("end_",
+				(ControlStepper& (ControlStepper::*)(float))&ControlStepper::end,
+				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::end)
+			.addOverloadedFunctions("step",
+				(ControlStepper& (ControlStepper::*)(float))&ControlStepper::step,
+				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::step)
+			.addOverloadedFunctions("trigger",
+				(ControlStepper& (ControlStepper::*)(float))&ControlStepper::trigger,
+				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::trigger)
+			.addOverloadedFunctions("bidirectional",
+				(ControlStepper& (ControlStepper::*)(float))&ControlStepper::bidirectional,
+				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::bidirectional)
+	));
+
 	state["ControlMidiToFreq"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlMidiToFreq,TemplatedControlGenerator<Tonic_::ControlMidiToFreq_>>()
 			.setConstructors<ControlMidiToFreq()>()
