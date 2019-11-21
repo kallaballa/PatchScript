@@ -151,6 +151,33 @@ void bindings2(kaguya::State& state) {
 				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::bidirectional)
 	));
 
+	state["ControlSwitcher"].setClass(make_control(state,
+			kaguya::UserdataMetatable<ControlSwitcher,TemplatedControlGenerator<Tonic_::ControlSwitcher_>>()
+			.setConstructors<ControlSwitcher()>()
+			.addFunction("setFloatInputs", &ControlSwitcher::setFloatInputs)
+			.addFunction("triggerForIndex", &ControlSwitcher::triggerForIndex)
+			.addOverloadedFunctions("addInput",
+				(ControlSwitcher& (ControlSwitcher::*)(float))&ControlSwitcher::addInput,
+				(ControlSwitcher& (ControlSwitcher::*)(ControlGenerator))&ControlSwitcher::addInput)
+			.addOverloadedFunctions("inputIndex",
+				(ControlSwitcher& (ControlSwitcher::*)(float))&ControlSwitcher::inputIndex,
+				(ControlSwitcher& (ControlSwitcher::*)(ControlGenerator))&ControlSwitcher::inputIndex)
+			.addOverloadedFunctions("doesWrap",
+				(ControlSwitcher& (ControlSwitcher::*)(float))&ControlSwitcher::doesWrap,
+				(ControlSwitcher& (ControlSwitcher::*)(ControlGenerator))&ControlSwitcher::doesWrap)
+			.addOverloadedFunctions("addAfterWrap",
+				(ControlSwitcher& (ControlSwitcher::*)(float))&ControlSwitcher::addAfterWrap,
+				(ControlSwitcher& (ControlSwitcher::*)(ControlGenerator))&ControlSwitcher::addAfterWrap)
+	));
+
+	state["ControlValue"].setClass(make_control(state,
+			kaguya::UserdataMetatable<ControlValue,TemplatedControlGenerator<Tonic_::ControlValue_>>()
+			.setConstructors<ControlValue()>()
+			.addFunction("value", &ControlValue::value)
+			.addFunction("getValue", &ControlValue::getValue)
+	));
+
+
 	state["ControlMidiToFreq"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlMidiToFreq,TemplatedControlGenerator<Tonic_::ControlMidiToFreq_>>()
 			.setConstructors<ControlMidiToFreq()>()

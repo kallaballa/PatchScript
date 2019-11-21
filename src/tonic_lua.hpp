@@ -61,6 +61,7 @@ template<class Tclass, class Tclass_> kaguya::UserdataMetatable<Tclass,Templated
 	typedef TemplatedEffect<Tclass, Tclass_> TG1_t;
 	state[string("TemplatedEffect") + typeid(Tclass).name()].setClass(
 				kaguya::UserdataMetatable<TG1_t,TG_t>()
+				.addFunction("input", &Tclass::input)
 				.addFunction("setIsStereoInput", &Tclass::setIsStereoInput)
 				.addOverloadedFunctions("bypass",
 						(Tclass& (Tclass::*)(float))&Tclass::bypass,

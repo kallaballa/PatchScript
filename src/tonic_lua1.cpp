@@ -4,10 +4,30 @@
 using namespace Tonic;
 
 void bindings1(kaguya::State& state) {
+	state["LFNoise"].setClass(make_generator(state,
+				kaguya::UserdataMetatable<LFNoise, TemplatedGenerator<Tonic_::LFNoise_>>()
+				.setConstructors<LFNoise()>()
+				.addOverloadedFunctions("setFreq",
+						(LFNoise& (LFNoise::*)(float))&LFNoise::setFreq,
+						(LFNoise& (LFNoise::*)(ControlGenerator))&LFNoise::setFreq)
+				));
+
 	state["Noise"].setClass(make_generator(state,
 				kaguya::UserdataMetatable<Noise, TemplatedGenerator<Tonic_::Noise_>>()
 				.setConstructors<Noise()>()
 				));
+	state["HPF12"].setClass(make_generator(state,
+			kaguya::UserdataMetatable<HPF12, TemplatedGenerator<Tonic_::HPF12_>>()
+			.setConstructors<HPF12()>()
+			.addFunction("normalizesGain", (HPF12& (HPF12::*)(bool))&HPF12::normalizesGain)
+			.addFunction("input", (HPF12& (HPF12::*)(Generator))&HPF12::input)
+			.addOverloadedFunctions("cutoff",
+					(HPF12& (HPF12::*)(Generator))&HPF12::cutoff,
+					(HPF12& (HPF12::*)(float))&HPF12::cutoff)
+					.addOverloadedFunctions("Q",
+							(HPF12& (HPF12::*)(Generator))&HPF12::Q,
+							(HPF12& (HPF12::*)(float))&HPF12::Q)
+));
 
 	state["HPF24"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<HPF24, TemplatedGenerator<Tonic_::HPF24_>>()
@@ -198,4 +218,12 @@ void bindings1(kaguya::State& state) {
 										(BitCrusher& (BitCrusher::*)(float))&BitCrusher::bitDepth,
 										(BitCrusher& (BitCrusher::*)(ControlGenerator))&BitCrusher::bitDepth))
 					);
+
+	state["MonoToStereoPanner"].setClass(make_effect(state,
+			kaguya::UserdataMetatable<MonoToStereoPanner,TemplatedEffect<MonoToStereoPanner,Tonic_::MonoToStereoPanner_>>()
+			.setConstructors<MonoToStereoPanner()>()
+			.addOverloadedFunctions("pan",
+				(MonoToStereoPanner& (MonoToStereoPanner::*)(float))&MonoToStereoPanner::pan,
+				(MonoToStereoPanner& (MonoToStereoPanner::*)(ControlGenerator))&MonoToStereoPanner::pan)
+			));
 }
