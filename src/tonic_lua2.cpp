@@ -189,4 +189,10 @@ void bindings2(kaguya::State& state) {
 			kaguya::UserdataMetatable<ControlDbToLinear,TemplatedControlConditioner<Tonic::ControlDbToLinear, Tonic_::ControlDbToLinear_>>()
 			.setConstructors<ControlDbToLinear()>()
 			));
+
+	state["ControlPrinter"].setClass(make_control_conditioner(state,
+			kaguya::UserdataMetatable<ControlPrinter,TemplatedControlConditioner<Tonic::ControlPrinter, Tonic_::ControlPrinter_>>()
+			.setConstructors<ControlPrinter()>()
+			.addFunction("message", &ControlPrinter::message)
+			));
 }
