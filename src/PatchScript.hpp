@@ -57,11 +57,15 @@ class PatchScript {
 	std::vector<std::string> whiteList_ = {
 			"print"
 	};
-
+	bool sandbox_ = true;
 	std::pair<bool, string> checkHomeDir();
 public:
 	PatchScript(size_t sampleRate= 44100);
 	virtual ~PatchScript();
+	//has to be called before init
+	void setSandbox(bool enable) {
+		sandbox_ = enable;
+	}
   void setErrorHandler(std::function<void(int,const char*)> errorfunction);
   std::pair<bool, string> init(const std::string& patchFile = "", const size_t& numVoices = 0);
   void destroy();

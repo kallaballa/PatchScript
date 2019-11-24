@@ -82,46 +82,51 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 			Synth s;
 			(*state_)["synth"] = &s;
 
+			if(sandbox_) {
+				std::ostringstream ss;
+				ss << "{\n";
 
-			std::ostringstream ss;
-			ss << "{\n";
+				for(size_t i = 0; i < whiteList_.size(); ++i) {
+					const auto& s = whiteList_[i];
 
-			for(size_t i = 0; i < whiteList_.size(); ++i) {
-				const auto& s = whiteList_[i];
+					ss << s << '=' << s;
+					if(i < whiteList_.size() - 1)
+						 ss << ',';
+					ss << '\n';
+				}
 
-				ss << s << '=' << s;
-				if(i < whiteList_.size() - 1)
-					 ss << ',';
-				ss << '\n';
-			}
+				ss << "}";
 
-			ss << "}";
-
-			std::string sandboxRead = R"__SANDBOX__(
-				function readAll(file)
-						local f = assert(io.open(file, "rb"))
-						local content = f:read("*all")
-						f:close()
-						return content
+				std::string sandboxRead = R"__SANDBOX__(
+					function readAll(file)
+							local f = assert(io.open(file, "rb"))
+							local content = f:read("*all")
+							f:close()
+							return content
+					end
+	
+				function run_sandbox(synth)
+						local content = readAll("%s")
+						local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
+						chunk = load(wrapped)
+						chunk()
+						debug.setupvalue(_patchScriptWrapper, 1, %s)
+						return _patchScriptWrapper(synth)
 				end
+				run_sandbox(synth)
+			)__SANDBOX__";
 
-			function run_sandbox(synth)
-					local content = readAll("%s")
-					local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
-			    chunk = load(wrapped)
-			    chunk()
-			    debug.setupvalue(_patchScriptWrapper, 1, %s)
-			    return _patchScriptWrapper(synth)
-			end
-			run_sandbox(synth)
-		)__SANDBOX__";
+				std::string whiteList = ss.str();
+				char buffer[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
+				sprintf(buffer, sandboxRead.c_str(), patchFile.c_str(), whiteList.c_str());
 
-			std::string whiteList = ss.str();
-			char buffer[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
-			sprintf(buffer, sandboxRead.c_str(), patchFile.c_str(), whiteList.c_str());
-
-			if (!state_->dostring(buffer)) {
-				break;
+				if (!state_->dostring(buffer)) {
+					break;
+				}
+			} else {
+				if (!state_->dofile(patchFile)) {
+					break;
+				}
 			}
 			poly_->addVoice(s);
 		}
