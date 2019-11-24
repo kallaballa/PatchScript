@@ -116,9 +116,9 @@ template<class Tclass, class Tclass_> kaguya::UserdataMetatable<Tclass,Templated
 
 	return make_generator_operators(tbl);
 }
-void bindings0(kaguya::State& state);
-void bindings1(kaguya::State& state);
-void bindings2(kaguya::State& state);
+std::vector<std::string> bindings0(kaguya::State& state);
+std::vector<std::string> bindings1(kaguya::State& state);
+std::vector<std::string> bindings2(kaguya::State& state);
 
 
 #endif /* TONIC_LUA_HPP_ */

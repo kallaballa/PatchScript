@@ -2,9 +2,16 @@
 
 using namespace Tonic;
 
-void bindings2(kaguya::State& state) {
+std::vector<std::string> bindings2(kaguya::State& state) {
+	std::vector<std::string> allow;
+
+	allow.push_back("dBToLin");
 	state["dBToLin"].setFunction(&dBToLin);
+
+	allow.push_back("linTodB");
 	state["linTodB"].setFunction(&linTodB);
+
+	allow.push_back("Synth");
 	state["Synth"].setClass(
 			kaguya::UserdataMetatable<Synth>()
 			.setConstructors<Synth()>()
@@ -15,6 +22,7 @@ void bindings2(kaguya::State& state) {
 						(ControlParameter (Synth::*)(string, TonicFloat))&Synth::addParameter,
 						(void (Synth::*)(ControlParameter))&Synth::addParameter));
 
+	allow.push_back("SampleTable");
 	state["SampleTable"].setClass(
 			kaguya::UserdataMetatable<SampleTable>()
 			.setConstructors<SampleTable()>()
@@ -26,7 +34,7 @@ void bindings2(kaguya::State& state) {
 			.addFunction("dataPointer", &SampleTable::dataPointer)
 );
 
-
+	allow.push_back("ControlGenerator");
 	state["ControlGenerator"].setClass(make_control_operators(
 			kaguya::UserdataMetatable<ControlGenerator>()
 			.setConstructors<ControlGenerator()>()
@@ -34,12 +42,14 @@ void bindings2(kaguya::State& state) {
 			.addFunction("tick", &ControlGenerator::tick))
 		);
 
+	allow.push_back("ControlAdder");
 	state["ControlAdder"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlAdder, TemplatedControlGenerator<Tonic_::ControlAdder_>>()
 			.setConstructors<ControlAdder()>()
 			.addFunction("input", &ControlAdder::input)
 			.addFunction("numInputs", &ControlAdder::numInputs)));
 
+	allow.push_back("ControlSubtractor");
 	state["ControlSubtractor"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlSubtractor, TemplatedControlGenerator<Tonic_::ControlSubtractor_>>()
 			.setConstructors<ControlSubtractor()>()
@@ -51,12 +61,14 @@ void bindings2(kaguya::State& state) {
 					(ControlSubtractor& (ControlSubtractor::*)(ControlGenerator))&ControlSubtractor::right)
 			));
 
+	allow.push_back("ControlMultiplier");
 	state["ControlMultiplier"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlMultiplier, TemplatedControlGenerator<Tonic_::ControlMultiplier_>>()
 			.setConstructors<ControlMultiplier()>()
 			.addFunction("input", &ControlMultiplier::input)
 			.addFunction("numInputs", &ControlMultiplier::numInputs)));
 
+	allow.push_back("ControlDivider");
 	state["ControlDivider"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlDivider, TemplatedControlGenerator<Tonic_::ControlDivider_>>()
 			.setConstructors<ControlDivider()>()
@@ -68,6 +80,7 @@ void bindings2(kaguya::State& state) {
 					(ControlDivider& (ControlDivider::*)(ControlGenerator))&ControlDivider::right)
 			));
 
+	allow.push_back("ControlParameter");
 	state["ControlParameter"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlParameter, TemplatedControlGenerator<Tonic_::ControlParameter_>>()
 			.setConstructors<ControlParameter()>()
@@ -89,6 +102,7 @@ void bindings2(kaguya::State& state) {
 			.addFunction("setNormalizedValue", &ControlParameter::setNormalizedValue)
 ));
 
+	allow.push_back("ControlRandom");
 	state["ControlRandom"].setClass(make_control(state,
 				kaguya::UserdataMetatable<ControlRandom, TemplatedControlGenerator<Tonic_::ControlRandom_>>()
 				.setConstructors<ControlRandom()>()
@@ -103,7 +117,7 @@ void bindings2(kaguya::State& state) {
 						(ControlRandom& (ControlRandom::*)(float))&ControlRandom::trigger)
 	));
 
-
+	allow.push_back("ControlMetro");
 	state["ControlMetro"].setClass(make_control(state,
 				kaguya::UserdataMetatable<ControlMetro,TemplatedControlGenerator<Tonic_::ControlMetro_>>()
 				.setConstructors<ControlMetro(), ControlMetro(float)>()
@@ -112,7 +126,7 @@ void bindings2(kaguya::State& state) {
 						(ControlMetro& (ControlMetro::*)(float))&ControlMetro::bpm)
 	));
 
-
+	allow.push_back("ControlPulse");
 	state["ControlPulse"].setClass(make_control(state,
 				kaguya::UserdataMetatable<ControlPulse,TemplatedControlGenerator<Tonic_::ControlPulse_>>()
 				.setConstructors<ControlPulse(),ControlPulse(float)>()
@@ -123,6 +137,7 @@ void bindings2(kaguya::State& state) {
 							(ControlPulse& (ControlPulse::*)(ControlGenerator))&ControlPulse::length,
 							(ControlPulse& (ControlPulse::*)(float))&ControlPulse::length)));
 
+	allow.push_back("ControlSnapToScale");
 	state["ControlSnapToScale"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlSnapToScale,TemplatedControlGenerator<Tonic_::ControlSnapToScale_>>()
 			.setConstructors<ControlSnapToScale()>()
@@ -131,6 +146,7 @@ void bindings2(kaguya::State& state) {
 				(ControlSnapToScale (ControlSnapToScale::*)(float))&ControlSnapToScale::input,
 				(ControlSnapToScale (ControlSnapToScale::*)(ControlGenerator))&ControlSnapToScale::input)));
 
+	allow.push_back("ControlStepper");
 	state["ControlStepper"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlStepper,TemplatedControlGenerator<Tonic_::ControlStepper_>>()
 			.setConstructors<ControlStepper()>()
@@ -151,6 +167,7 @@ void bindings2(kaguya::State& state) {
 				(ControlStepper& (ControlStepper::*)(ControlGenerator))&ControlStepper::bidirectional)
 	));
 
+	allow.push_back("ControlSwitcher");
 	state["ControlSwitcher"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlSwitcher,TemplatedControlGenerator<Tonic_::ControlSwitcher_>>()
 			.setConstructors<ControlSwitcher()>()
@@ -170,6 +187,7 @@ void bindings2(kaguya::State& state) {
 				(ControlSwitcher& (ControlSwitcher::*)(ControlGenerator))&ControlSwitcher::addAfterWrap)
 	));
 
+	allow.push_back("ControlValue");
 	state["ControlValue"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlValue,TemplatedControlGenerator<Tonic_::ControlValue_>>()
 			.setConstructors<ControlValue()>()
@@ -177,7 +195,7 @@ void bindings2(kaguya::State& state) {
 			.addFunction("getValue", &ControlValue::getValue)
 	));
 
-
+	allow.push_back("ControlMidiToFreq");
 	state["ControlMidiToFreq"].setClass(make_control(state,
 			kaguya::UserdataMetatable<ControlMidiToFreq,TemplatedControlGenerator<Tonic_::ControlMidiToFreq_>>()
 			.setConstructors<ControlMidiToFreq()>()
@@ -185,14 +203,18 @@ void bindings2(kaguya::State& state) {
 				(ControlMidiToFreq (ControlMidiToFreq::*)(float))&ControlMidiToFreq::input,
 				(ControlMidiToFreq (ControlMidiToFreq::*)(ControlGenerator))&ControlMidiToFreq::input)));
 
+	allow.push_back("ControlDbToLinear");
 	state["ControlDbToLinear"].setClass(make_control_conditioner(state,
 			kaguya::UserdataMetatable<ControlDbToLinear,TemplatedControlConditioner<Tonic::ControlDbToLinear, Tonic_::ControlDbToLinear_>>()
 			.setConstructors<ControlDbToLinear()>()
 			));
 
+	allow.push_back("ControlPrinter");
 	state["ControlPrinter"].setClass(make_control_conditioner(state,
 			kaguya::UserdataMetatable<ControlPrinter,TemplatedControlConditioner<Tonic::ControlPrinter, Tonic_::ControlPrinter_>>()
 			.setConstructors<ControlPrinter()>()
 			.addFunction("message", &ControlPrinter::message)
 			));
+
+	return allow;
 }

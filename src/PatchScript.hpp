@@ -50,10 +50,14 @@ class PatchScript {
 
 	Tonic::Synth* synth_ = nullptr;
 	PolySynth* poly_ = nullptr;
-	kaguya::State* state = nullptr;
+	kaguya::State* state_ = nullptr;
 	SqlStore* store_ = nullptr;
-	std::vector<Tonic::Synth*> s;
-	Config config;
+	std::vector<Tonic::Synth*> synthesizers_;
+	Config config_;
+	std::vector<std::string> whiteList_ = {
+			"print"
+	};
+
 	std::pair<bool, string> checkHomeDir();
 public:
 	PatchScript(size_t sampleRate= 44100);
@@ -63,7 +67,6 @@ public:
   void destroy();
   PolySynth* getPolySynth();
   void list(std::vector<SessionObject>& sessions);
-  void selectPatches(const SessionObject& po, std::vector<SessionObject>& sessions);
   void store(const SessionObject& so);
   void remove(const SessionObject& so);
   void fill(float *outData,  unsigned int numFrames, unsigned int numChannels);

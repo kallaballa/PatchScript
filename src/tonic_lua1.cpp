@@ -3,7 +3,10 @@
 
 using namespace Tonic;
 
-void bindings1(kaguya::State& state) {
+std::vector<std::string> bindings1(kaguya::State& state) {
+	std::vector<std::string> allow;
+
+	allow.push_back("LFNoise");
 	state["LFNoise"].setClass(make_generator(state,
 				kaguya::UserdataMetatable<LFNoise, TemplatedGenerator<Tonic_::LFNoise_>>()
 				.setConstructors<LFNoise()>()
@@ -12,10 +15,13 @@ void bindings1(kaguya::State& state) {
 						(LFNoise& (LFNoise::*)(ControlGenerator))&LFNoise::setFreq)
 				));
 
+	allow.push_back("Noise");
 	state["Noise"].setClass(make_generator(state,
 				kaguya::UserdataMetatable<Noise, TemplatedGenerator<Tonic_::Noise_>>()
 				.setConstructors<Noise()>()
 				));
+
+	allow.push_back("HPF12");
 	state["HPF12"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<HPF12, TemplatedGenerator<Tonic_::HPF12_>>()
 			.setConstructors<HPF12()>()
@@ -29,6 +35,7 @@ void bindings1(kaguya::State& state) {
 							(HPF12& (HPF12::*)(float))&HPF12::Q)
 ));
 
+	allow.push_back("HPF24");
 	state["HPF24"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<HPF24, TemplatedGenerator<Tonic_::HPF24_>>()
 			.setConstructors<HPF24()>()
@@ -42,6 +49,7 @@ void bindings1(kaguya::State& state) {
 							(HPF24& (HPF24::*)(float))&HPF24::Q)
 ));
 
+	allow.push_back("LPF12");
 	state["LPF12"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<LPF12, TemplatedGenerator<Tonic_::LPF12_>>()
 			.setConstructors<LPF12()>()
@@ -55,6 +63,7 @@ void bindings1(kaguya::State& state) {
 							(LPF12& (LPF12::*)(float))&LPF12::Q)
 							));
 
+	allow.push_back("LPF24");
 	state["LPF24"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<LPF24, TemplatedGenerator<Tonic_::LPF24_>>()
 			.setConstructors<LPF24()>()
@@ -68,6 +77,7 @@ void bindings1(kaguya::State& state) {
 							(LPF24& (LPF24::*)(float))&LPF24::Q)
 						));
 
+	allow.push_back("BPF12");
 	state["BPF12"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<BPF12, TemplatedGenerator<Tonic_::BPF12_>>()
 			.setConstructors<BPF12()>()
@@ -81,6 +91,7 @@ void bindings1(kaguya::State& state) {
 							(BPF12& (BPF12::*)(float))&BPF12::Q)
 						));
 
+	allow.push_back("BPF24");
 	state["BPF24"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<BPF24, TemplatedGenerator<Tonic_::BPF24_>>()
 			.setConstructors<BPF24()>()
@@ -94,6 +105,7 @@ void bindings1(kaguya::State& state) {
 							(BPF24& (BPF24::*)(float))&BPF24::Q)
 						));
 
+	allow.push_back("ADSR");
 	state["ADSR"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<ADSR, TemplatedGenerator<Tonic_::ADSR_>>()
 			.setConstructors<ADSR()>()
@@ -122,6 +134,7 @@ void bindings1(kaguya::State& state) {
 					(ADSR& (ADSR::*)(float))&ADSR::legato,
 					(ADSR& (ADSR::*)(ControlGenerator))&ADSR::legato)));
 
+	allow.push_back("Compressor");
 	state["Compressor"].setClass(make_effect(state,
 			kaguya::UserdataMetatable<Compressor,TemplatedEffect<Tonic::Compressor, Tonic_::Compressor_>>()
 			.setConstructors<Compressor()>()
@@ -148,6 +161,7 @@ void bindings1(kaguya::State& state) {
 							(Compressor& (Compressor::*)(float))&Compressor::makeupGain,
 							(Compressor& (Compressor::*)(ControlGenerator))&Compressor::makeupGain)));
 
+	allow.push_back("StereoDelay");
 	state["StereoDelay"].setClass(make_wet_dry(state,
 			kaguya::UserdataMetatable<StereoDelay,TemplatedWetDryEffect<StereoDelay,Tonic_::StereoDelay_>>()
 			.setConstructors<StereoDelay(float,float,float,float)>()
@@ -165,6 +179,7 @@ void bindings1(kaguya::State& state) {
 					(StereoDelay& (StereoDelay::*)(ControlGenerator))&StereoDelay::delayTimeRight)
 					));
 
+	allow.push_back("Reverb");
 	state["Reverb"].setClass(make_wet_dry(state,
 			kaguya::UserdataMetatable<Reverb,TemplatedWetDryEffect<Reverb,Tonic_::Reverb_>>()
 			.setConstructors<Reverb()>()
@@ -202,7 +217,7 @@ void bindings1(kaguya::State& state) {
 					(Reverb& (Reverb::*)(float))&Reverb::stereoWidth,
 					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::stereoWidth)
 					));
-
+// 	allow.push_back("LV2Plugin");
 //	state["LV2Plugin"].setClass(make_wet_dry(state,
 //			kaguya::UserdataMetatable<LV2Effect,TemplatedWetDryEffect<LV2Effect,Tonic_::LV2Effect_>>()
 //			.setConstructors<LV2Effect(const char*)>()
@@ -211,6 +226,7 @@ void bindings1(kaguya::State& state) {
 //			.addFunction("getControlDefaults", &LV2Effect::getControlDefaults)
 //					));
 
+	allow.push_back("BitCrusher");
 	state["BitCrusher"].setClass(make_effect(state,
 			kaguya::UserdataMetatable<BitCrusher,TemplatedEffect<BitCrusher,Tonic_::BitCrusher_>>()
 			.setConstructors<BitCrusher()>()
@@ -219,6 +235,7 @@ void bindings1(kaguya::State& state) {
 										(BitCrusher& (BitCrusher::*)(ControlGenerator))&BitCrusher::bitDepth))
 					);
 
+	allow.push_back("MonoToStereoPanner");
 	state["MonoToStereoPanner"].setClass(make_effect(state,
 			kaguya::UserdataMetatable<MonoToStereoPanner,TemplatedEffect<MonoToStereoPanner,Tonic_::MonoToStereoPanner_>>()
 			.setConstructors<MonoToStereoPanner()>()
@@ -226,4 +243,6 @@ void bindings1(kaguya::State& state) {
 				(MonoToStereoPanner& (MonoToStereoPanner::*)(float))&MonoToStereoPanner::pan,
 				(MonoToStereoPanner& (MonoToStereoPanner::*)(ControlGenerator))&MonoToStereoPanner::pan)
 			));
+
+	return allow;
 }

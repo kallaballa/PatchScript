@@ -2,7 +2,9 @@
 
 using namespace Tonic;
 
-void bindings0(kaguya::State& state) {
+std::vector<std::string> bindings0(kaguya::State& state) {
+	std::vector<std::string> allow;
+	allow.push_back("Generator");
 	state["Generator"].setClass(make_generator_operators(
 			kaguya::UserdataMetatable<Generator>()
 			.setConstructors<Generator()>()
@@ -10,13 +12,14 @@ void bindings0(kaguya::State& state) {
 			.addFunction("tick", &Generator::tick)
 					));
 
+	allow.push_back("Adder");
 	state["Adder"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<Adder, TemplatedGenerator<Tonic_::Adder_>>()
 			.setConstructors<Adder()>()
 			.addFunction("input", &Adder::input)
 			.addFunction("numInputs", &Adder::numInputs)));
 
-
+	allow.push_back("Subtractor");
 	state["Subtractor"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<Subtractor, TemplatedGenerator<Tonic_::Subtractor_>>()
 			.setConstructors<Subtractor()>()
@@ -30,18 +33,14 @@ void bindings0(kaguya::State& state) {
 					(Subtractor& (Subtractor::*)(ControlGenerator))&Subtractor::right)
 			));
 
+	allow.push_back("Multiplier");
 	state["Multiplier"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<Multiplier,TemplatedGenerator<Tonic_::Multiplier_>>()
 			.setConstructors<Multiplier()>()
 			.addFunction("input", &Multiplier::input)
 			.addFunction("numInputs", &Multiplier::numInputs)));
 
-	state["ControlMultiplier"].setClass(make_control(state,
-			kaguya::UserdataMetatable<ControlMultiplier, TemplatedControlGenerator<Tonic_::ControlMultiplier_>>()
-			.setConstructors<ControlMultiplier()>()
-			.addFunction("input", &ControlMultiplier::input)
-			.addFunction("numInputs", &ControlMultiplier::numInputs)));
-
+	allow.push_back("Divider");
 	state["Divider"].setClass(make_generator(state,
 				kaguya::UserdataMetatable<Divider, TemplatedGenerator<Tonic_::Divider_>>()
 				.setConstructors<Divider()>()
@@ -55,6 +54,7 @@ void bindings0(kaguya::State& state) {
 						(Divider& (Divider::*)(ControlGenerator))&Divider::right)
 			));
 
+	allow.push_back("FixedValue");
 	state["FixedValue"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<FixedValue, TemplatedGenerator<Tonic_::FixedValue_>>()
 			.setConstructors<FixedValue(), FixedValue(float)>()
@@ -63,6 +63,7 @@ void bindings0(kaguya::State& state) {
 			(FixedValue& (FixedValue::*)(ControlGenerator))&FixedValue::setValue)
 	));
 
+	allow.push_back("RampedValue");
 	state["RampedValue"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<RampedValue, TemplatedGenerator<Tonic_::RampedValue_>>()
 			.setConstructors<RampedValue()>()
@@ -78,6 +79,7 @@ void bindings0(kaguya::State& state) {
 					(RampedValue& (RampedValue::*)(ControlGenerator))&RampedValue::value)
 			));
 
+	allow.push_back("SineWave");
 	state["SineWave"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<SineWave, TemplatedGenerator<Tonic_::TableLookupOsc_>>()
 			.setConstructors<SineWave()>()
@@ -87,6 +89,7 @@ void bindings0(kaguya::State& state) {
 					(SineWave& (SineWave::*)(ControlGenerator))&SineWave::freq)
 				));
 
+	allow.push_back("RectWave");
 	state["RectWave"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<RectWave, TemplatedGenerator<Tonic_::RectWave_>>()
 			.setConstructors<RectWave()>()
@@ -100,6 +103,7 @@ void bindings0(kaguya::State& state) {
 					(RectWave& (RectWave::*)(ControlGenerator))&RectWave::pwm)
 				));
 
+	allow.push_back("RectWaveBL");
 	state["RectWaveBL"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<RectWaveBL, TemplatedGenerator<Tonic_::RectWaveBL_>>()
 			.setConstructors<RectWaveBL()>()
@@ -113,6 +117,7 @@ void bindings0(kaguya::State& state) {
 					(RectWaveBL& (RectWaveBL::*)(ControlGenerator))&RectWaveBL::pwm)
 	));
 
+	allow.push_back("SquareWave");
 	state["SquareWave"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<SquareWave, TemplatedGenerator<Tonic_::RectWave_>>()
 			.setConstructors<SquareWave()>()
@@ -122,6 +127,7 @@ void bindings0(kaguya::State& state) {
 					(SquareWave& (SquareWave::*)(ControlGenerator))&SquareWave::freq)
 	));
 
+	allow.push_back("TriangleWave");
 	state["TriangleWave"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<TriangleWave, TemplatedGenerator<Tonic_::AngularWave_>>()
 			.setConstructors<TriangleWave()>()
@@ -135,6 +141,7 @@ void bindings0(kaguya::State& state) {
 					(TriangleWave& (TriangleWave::*)(ControlGenerator))&TriangleWave::slope)
 ));
 
+	allow.push_back("SquareWaveBL");
 	state["SquareWaveBL"].setClass(make_generator(state,
 			kaguya::UserdataMetatable<SquareWaveBL, TemplatedGenerator<Tonic_::RectWaveBL_>>()
 			.setConstructors<SquareWaveBL()>()
@@ -143,4 +150,6 @@ void bindings0(kaguya::State& state) {
 					(SquareWaveBL& (SquareWaveBL::*)(float))&SquareWaveBL::freq,
 					(SquareWaveBL& (SquareWaveBL::*)(ControlGenerator))&SquareWaveBL::freq)
 	));
+
+	return allow;
 }

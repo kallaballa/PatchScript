@@ -8,15 +8,19 @@
 namespace patchscript {
 using Tonic::Synth;
 
-PatchScript::PatchScript(size_t sampleRate) : state(new kaguya::State()) {
+
+PatchScript::PatchScript(size_t sampleRate) : state_(new kaguya::State()) {
 	Tonic::setSampleRate(sampleRate);
-	bindings0(*state);
-	bindings1(*state);
-	bindings2(*state);
+	for(const auto& s : bindings0(*state_))
+		whiteList_.push_back(s);
+	for(const auto& s : bindings1(*state_))
+		whiteList_.push_back(s);
+	for(const auto& s : bindings2(*state_))
+		whiteList_.push_back(s);
 }
 
 PatchScript::~PatchScript() {
-	delete(state);
+	delete(state_);
 }
 
 std::pair<bool, string> PatchScript::checkHomeDir() {
@@ -24,44 +28,48 @@ std::pair<bool, string> PatchScript::checkHomeDir() {
 	if(home == nullptr) {
 		return {false,(string("Can't find ") + DEFAULT_ENV_VARIABLE + " environment variable")};
 	}
-	config.patchScriptDir_ = fs::path(string(home) + "/" + DEFAULT_HOME_DIR);
-	config.dataDir_ = fs::path(string(home) + "/" + DEFAULT_DATA_DIR);
-	config.logDir_ = fs::path(string(home) + "/" + DEFAULT_LOG_DIR);
-	config.dbFile_ = fs::path(string(home) + "/" + DEFAULT_DB_FILE);
+	config_.patchScriptDir_ = fs::path(string(home) + "/" + DEFAULT_HOME_DIR);
+	config_.dataDir_ = fs::path(string(home) + "/" + DEFAULT_DATA_DIR);
+	config_.logDir_ = fs::path(string(home) + "/" + DEFAULT_LOG_DIR);
+	config_.dbFile_ = fs::path(string(home) + "/" + DEFAULT_DB_FILE);
 
-	if(fs::exists(config.patchScriptDir_)) {
-		if(!fs::is_directory(config.patchScriptDir_)) {
-			return {false,(config.patchScriptDir_.string() + " is not a directory")};
+	if(fs::exists(config_.patchScriptDir_)) {
+		if(!fs::is_directory(config_.patchScriptDir_)) {
+			return {false,(config_.patchScriptDir_.string() + " is not a directory")};
 		}
 
-		if(!(fs::exists(config.dataDir_) && fs::is_directory(config.dataDir_))) {
-			return {false,(config.dataDir_.string() + " doesn't exist or is not a directory")};
+		if(!(fs::exists(config_.dataDir_) && fs::is_directory(config_.dataDir_))) {
+			return {false,(config_.dataDir_.string() + " doesn't exist or is not a directory")};
 		}
 
-		if(!(fs::exists(config.logDir_) && fs::is_directory(config.logDir_))) {
-			return {false,(config.logDir_.string() + " doesn't exist or is not a directory")};
+		if(!(fs::exists(config_.logDir_) && fs::is_directory(config_.logDir_))) {
+			return {false,(config_.logDir_.string() + " doesn't exist or is not a directory")};
 		}
 	} else {
-		fs::create_directory(config.patchScriptDir_);
-		fs::create_directory(config.dataDir_);
-		fs::create_directory(config.logDir_);
+		fs::create_directory(config_.patchScriptDir_);
+		fs::create_directory(config_.dataDir_);
+		fs::create_directory(config_.logDir_);
 	}
 
 	return {true, "Success"};
 }
 
 void PatchScript::setErrorHandler(std::function<void(int,const char*)> errorfunction) {
-	state->setErrorHandler(errorfunction);
+	state_->setErrorHandler(errorfunction);
 }
 
 std::pair<bool, string> PatchScript::init(const std::string& patchFile, const size_t& numVoices) {
+	//protect the sprintf buffer
+	if(patchFile.size() > 255)
+		throw std::runtime_error("File name too long: " + patchFile.size());
+
 	auto result = checkHomeDir();
 	if(!result.first) {
 		return result;
 	}
 
 	try {
-		store_ = new SqlStore(config.dbFile_);
+		store_ = new SqlStore(config_.dbFile_);
 	} catch (std::exception& ex) {
 		return {false, ex.what()};
 	}
@@ -72,8 +80,47 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 	try {
 		for (size_t i = 0; i < numVoices; ++i) {
 			Synth s;
-			(*state)["synth"] = &s;
-			if (!state->dofile(patchFile)) {
+			(*state_)["synth"] = &s;
+
+
+			std::ostringstream ss;
+			ss << "{\n";
+
+			for(size_t i = 0; i < whiteList_.size(); ++i) {
+				const auto& s = whiteList_[i];
+
+				ss << s << '=' << s;
+				if(i < whiteList_.size() - 1)
+					 ss << ',';
+				ss << '\n';
+			}
+
+			ss << "}";
+
+			std::string sandboxRead = R"__SANDBOX__(
+				function readAll(file)
+						local f = assert(io.open(file, "rb"))
+						local content = f:read("*all")
+						f:close()
+						return content
+				end
+
+			function run_sandbox(synth)
+					local content = readAll("%s")
+					local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
+			    chunk = load(wrapped)
+			    chunk()
+			    debug.setupvalue(_patchScriptWrapper, 1, %s)
+			    return _patchScriptWrapper(synth)
+			end
+			run_sandbox(synth)
+		)__SANDBOX__";
+
+			std::string whiteList = ss.str();
+			char buffer[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
+			sprintf(buffer, sandboxRead.c_str(), patchFile.c_str(), whiteList.c_str());
+
+			if (!state_->dostring(buffer)) {
 				break;
 			}
 			poly_->addVoice(s);
