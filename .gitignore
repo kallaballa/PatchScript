@@ -25,6 +25,6 @@ src/fsexporter/fsexporter.o
 src/fsimporter/fsimporter
 src/fsimporter/fsimporter.dep
 src/fsimporter/fsimporter.o
-
+src/libpatchscript.dylib
 
 
