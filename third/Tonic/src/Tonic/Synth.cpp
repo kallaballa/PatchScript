@@ -13,7 +13,32 @@
 #include <sstream>
 
 namespace Tonic {
-  
+	char specialChars[10] = {'-', '_', '.', '+', '!', '(', ')'};
+
+	bool isValidControlParameterName(const string& n) {
+		if(n.empty() || n.size() > 255)
+			return false;
+
+		for(const auto& c : n) {
+			if((c >= '\x30' && c <= '\x39') || (c >= '\x41' && c <= '\x5A') || (c >= '\x61' && c <= '\x7A')) {
+				continue;
+			} else {
+				bool found = false;
+				for(const auto& s : specialChars) {
+					if(c == s) {
+						found = true;
+						break;
+					}
+				}
+				if(found)
+					continue;
+			}
+			return false;
+		}
+
+		return true;
+	}
+
   // Synth Factory
   SynthFactory::map_type * SynthFactory::map;
 
@@ -45,6 +70,9 @@ namespace Tonic {
     
     ControlParameter Synth_::addParameter(string name, TonicFloat initialValue)
     {
+    	if(!isValidControlParameterName(name)) {
+    		throw std::invalid_argument("Illegal control parameter name: \"" + name + "\"");
+    	}
       if (parameters_.find(name) == parameters_.end())
       {
         ControlParameter param = ControlParameter().name(name).value(initialValue).displayName(name);
