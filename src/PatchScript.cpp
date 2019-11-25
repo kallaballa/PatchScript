@@ -1,9 +1,11 @@
-#include <cstdlib>
+
 #include "defines.hpp"
 #include "PatchScript.hpp"
 #include "Tonic.h"
 #include "kaguya/kaguya.hpp"
 #include "tonic_lua.hpp"
+#include <cstdlib>
+#include <fstream>
 
 namespace patchscript {
 using Tonic::Synth;
@@ -32,6 +34,7 @@ std::pair<bool, string> PatchScript::checkHomeDir() {
 	config_.dataDir_ = fs::path(string(home) + "/" + DEFAULT_DATA_DIR);
 	config_.logDir_ = fs::path(string(home) + "/" + DEFAULT_LOG_DIR);
 	config_.dbFile_ = fs::path(string(home) + "/" + DEFAULT_DB_FILE);
+	config_.patFile_ = fs::path(string(home) + "/" + DEFAULT_PAT_FILE);
 
 	if(fs::exists(config_.patchScriptDir_)) {
 		if(!fs::is_directory(config_.patchScriptDir_)) {
@@ -49,6 +52,8 @@ std::pair<bool, string> PatchScript::checkHomeDir() {
 		fs::create_directory(config_.patchScriptDir_);
 		fs::create_directory(config_.dataDir_);
 		fs::create_directory(config_.logDir_);
+    std::ofstream ofs(config_.patFile_);
+    ofs.close();
 	}
 
 	return {true, "Success"};
