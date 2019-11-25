@@ -9,4 +9,4 @@ make $@
 #cd ../ZipLib/
 #make $@
 cd ../lua-5.3.5/
-make $@ posix MYCFLAGS=-fPIC
+make  posix MYCFLAGS=-fPIC

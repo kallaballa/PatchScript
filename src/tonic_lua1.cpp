@@ -1,5 +1,4 @@
 #include "tonic_lua.hpp"
-#include "lvplugin.hpp"
 
 using namespace Tonic;
 
