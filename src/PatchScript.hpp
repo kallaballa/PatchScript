@@ -46,6 +46,7 @@ class PatchScript {
 		fs::path dataDir_;
 		fs::path logDir_;
 		fs::path dbFile_;
+		fs::path patFile_;
 	};
 
 	Tonic::Synth* synth_ = nullptr;

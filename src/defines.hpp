@@ -10,6 +10,9 @@
 #define DEFAULT_DATA_DIR ".patchscript/data/"
 #define DEFAULT_LOG_DIR ".patchscript/logs/"
 #define DEFAULT_DB_FILE ".patchscript/data/sessions.db"
+#define DEFAULT_DB_FILE ".patchscript/data/sessions.db"
+#define DEFAULT_PAT_FILE ".patchscript/data/midipatch.pat"
+
 
 
 #endif /* SRC_DEFINES_HPP_ */
