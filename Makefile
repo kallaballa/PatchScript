@@ -4,7 +4,18 @@ ifeq ($(UNAME_S), Darwin)
  BOOST_MT=-mt
 endif
 
-CXX      := g++-7
+ifeq (, $(shell which g++-9))
+ CXX := g++-8
+endif
+
+ifeq (, $(shell which g++-8))
+ CXX := g++-7
+endif
+
+ifeq (, $(shell which g++-7))
+ CXX := g++
+endif
+
 CXXFLAGS := -pthread -fno-strict-aliasing -std=c++17 -pedantic -Wall
 LIBS     := -lpthread -lm 
 .PHONY: all release debian-release info debug clean debian-clean distclean asan
