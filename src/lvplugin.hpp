@@ -60,20 +60,27 @@ cleanup(int status, LV2Struct* self)
 {
 	lilv_instance_free(self->instance);
 //	lilv_world_free(self->world);
-	free(self->ports);
+	//free(self->ports);
 	return status;
 }
 
 /** Print a fatal error and clean up for exit. */
-static int
+static void
 fatal(LV2Struct* self, int status, const char* fmt, ...)
 {
+	int s;
+	if(self) {
+		 s = cleanup(status, self);
+	} else {
+		s = status;
+	}
+	char buffer[1024];
 	va_list args;
 	va_start(args, fmt);
-	fprintf(stderr, "error: ");
-	vfprintf(stderr, fmt, args);
+	sprintf(buffer, "error: ");
+	vsprintf(buffer, fmt, args);
 	va_end(args);
-	return self ? cleanup(status, self) : status;
+	throw runtime_error(buffer);
 }
 
 /**
@@ -133,8 +140,8 @@ namespace Tonic {
     		params[name] = p;
     }
 
-    std::vector<const char*> getControlNames() {
-    	std::vector<const char*> names;
+    std::vector<string> getControlNames() {
+    	std::vector<string> names;
   	 	for (uint32_t p = 0; p < lilv_plugin_get_num_ports(plugin); ++p) {
   	 		const char* symbol = lilv_node_as_string (lilv_port_get_symbol(plugin, self.ports[p].lilv_port));
   	 		if (self.ports[p].type == TYPE_CONTROL && !(ends_with(string(symbol), string("_in")) || ends_with(string(symbol), string("_out")) || ends_with(string(symbol), string("_outL"))|| ends_with(string(symbol), string("_outR")) || ends_with(string(symbol), string("_inL")) || ends_with(string(symbol), string("_inR")))) {
@@ -179,7 +186,7 @@ namespace Tonic {
       	gen()->setControl(name,param);
       }
 
-      std::vector<const char*> getControlNames() {
+      std::vector<string> getControlNames() {
       	return gen()->getControlNames();
       }
 

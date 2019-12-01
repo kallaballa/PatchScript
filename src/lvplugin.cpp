@@ -37,7 +37,7 @@ create_ports(LV2Struct* self)
 			port->is_input = true;
 		} else if (!lilv_port_is_a(self->plugin, lport, lv2_OutputPort) &&
 		           !port->optional) {
-			return fatal(self, 1, "Port %d is neither input nor output\n", i);
+			fatal(self, 1, "Port %d is neither input nor output\n", i);
 		}
 
 		/* Check if port is an audio or control port */
@@ -58,7 +58,7 @@ create_ports(LV2Struct* self)
 				++self->n_cv_out;
 			}
 		}else if (!port->optional) {
-			return fatal(self, 1, "Port %d has unsupported type\n", i);
+			fatal(self, 1, "Port %d has unsupported type\n", i);
 		}
 	}
 
@@ -115,6 +115,9 @@ namespace Tonic {
 														;
    	self.instance = lilv_plugin_instantiate(
    		self.plugin, Tonic::sampleRate(), NULL);
+   	if(self.instance == NULL)
+   		throw new std::runtime_error("Can't instantiate LV2 plugin");
+
    	for (uint32_t p = 0, i = 0, o = 0; p < n_ports; ++p) {
    		if (self.ports[p].type == TYPE_CONTROL) {
    			lilv_instance_connect_port(self.instance, p, &self.ports[p].value);
