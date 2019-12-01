@@ -56,7 +56,8 @@ class PatchScript {
 	std::vector<Tonic::Synth*> synthesizers_;
 	Config config_;
 	std::vector<std::string> whiteList_ = {
-			"print"
+			"print",
+			"pairs"
 	};
 	bool sandbox_ = true;
 	std::pair<bool, string> checkHomeDir();
