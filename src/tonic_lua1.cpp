@@ -217,14 +217,15 @@ std::vector<std::string> bindings1(kaguya::State& state) {
 					(Reverb& (Reverb::*)(float))&Reverb::stereoWidth,
 					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::stereoWidth)
 					));
-// 	allow.push_back("LV2Plugin");
-//	state["LV2Plugin"].setClass(make_wet_dry(state,
-//			kaguya::UserdataMetatable<LV2Effect,TemplatedWetDryEffect<LV2Effect,Tonic_::LV2Effect_>>()
-//			.setConstructors<LV2Effect(const char*)>()
-//			.addFunction("setControl", &LV2Effect::setControl)
-//			.addFunction("getControlNames", &LV2Effect::getControlNames)
-//			.addFunction("getControlDefaults", &LV2Effect::getControlDefaults)
-//					));
+
+ 	allow.push_back("LV2Plugin");
+	state["LV2Plugin"].setClass(make_wet_dry(state,
+			kaguya::UserdataMetatable<LV2Effect,TemplatedWetDryEffect<LV2Effect,Tonic_::LV2Effect_>>()
+			.setConstructors<LV2Effect(const char*)>()
+			.addFunction("setControl", &LV2Effect::setControl)
+			.addFunction("getControlNames", &LV2Effect::getControlNames)
+			.addFunction("getControlDefaults", &LV2Effect::getControlDefaults)
+					));
 
 	allow.push_back("BitCrusher");
 	state["BitCrusher"].setClass(make_effect(state,

@@ -73,7 +73,12 @@ namespace Tonic {
     	if(!isValidControlParameterName(name)) {
     		throw std::invalid_argument("Illegal control parameter name: \"" + name + "\"");
     	}
-      if (parameters_.find(name) == parameters_.end())
+
+    	if(name.find(".") == string::npos && name.at(0) != '_') {
+    		name = "Global." + name;
+    	}
+
+    	if (parameters_.find(name) == parameters_.end())
       {
         ControlParameter param = ControlParameter().name(name).value(initialValue).displayName(name);
         parameters_[name] = param;
@@ -146,7 +151,4 @@ namespace Tonic {
     }
     
   }
-  
-
-  
 }

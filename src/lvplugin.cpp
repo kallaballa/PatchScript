@@ -1,10 +1,11 @@
 #include "lvplugin.hpp"
 
+LilvWorld* LV2Struct::world = nullptr;
 
 int
 create_ports(LV2Struct* self)
 {
-	LilvWorld*     world   = self->world;
+	LilvWorld*     world   = LV2Struct::world;
 	const uint32_t n_ports = lilv_plugin_get_num_ports(self->plugin);
 
 	self->n_ports = n_ports;
@@ -87,17 +88,13 @@ namespace Tonic {
 
   void LV2Effect_::initialize(const char* pluginUri) {
    	/* Create world and plugin URI */
-   	self.world = lilv_world_new();
-   	LilvNode* uri = lilv_new_uri(self.world, pluginUri);
+   	LilvNode* uri = lilv_new_uri(LV2Struct::world, pluginUri);
    	if (!uri) {
    		fatal(&self, 2, "Invalid plugin URI <%s>\n", pluginUri);
    	}
 
-   	/* Discover world */
-   	lilv_world_load_all(self.world);
-
    	/* Get plugin */
-   	const LilvPlugins* plugins = lilv_world_get_all_plugins(self.world);
+   	const LilvPlugins* plugins = lilv_world_get_all_plugins(LV2Struct::world);
    	plugin  = lilv_plugins_get_by_uri(plugins, uri);
    	lilv_node_free(uri);
    	if (!(self.plugin = plugin)) {
@@ -152,10 +149,9 @@ namespace Tonic {
   }
 
   inline void LV2Effect_::computeSynthesisBlock( const SynthesisContext_ &context ){
-
-  	for(auto& pair : params) {
+  	for(auto pair : params) {
   		TonicFloat value = pair.second.tick(context).value;
-  		LilvNode*       sym   = lilv_new_string(self.world, pair.first);
+  		LilvNode*       sym   = lilv_new_string(LV2Struct::world, pair.first.c_str());
   		const LilvPort* port  = lilv_plugin_get_port_by_symbol(plugin, sym);
   		LilvNode *min, *max, *def;
   		lilv_port_get_range(plugin, port, &def, &min, &max);

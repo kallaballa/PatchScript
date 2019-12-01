@@ -32,18 +32,18 @@ typedef enum {
 } PortType;
 
 /** Runtime port information */
-typedef struct {
+struct Port {
 	const LilvPort* lilv_port;  ///< Port description
 	PortType        type;       ///< Datatype
 	uint32_t        index;      ///< Port index
 	float           value;      ///< Control value (if applicable)
 	bool            is_input;   ///< True iff an input port
 	bool            optional;   ///< True iff connection optional
-} Port;
+};
 
 /** Application state */
-typedef struct {
-	LilvWorld*        world;
+struct LV2Struct {
+	static LilvWorld* world;
 	const LilvPlugin* plugin;
 	LilvInstance*     instance;
 	unsigned          n_ports;
@@ -52,14 +52,14 @@ typedef struct {
 	unsigned          n_cv_in;
 	unsigned          n_cv_out;
 	Port*             ports;
-} LV2Struct;
+};
 
 /** Clean up all resources. */
 static int
 cleanup(int status, LV2Struct* self)
 {
 	lilv_instance_free(self->instance);
-	lilv_world_free(self->world);
+//	lilv_world_free(self->world);
 	free(self->ports);
 	return status;
 }
@@ -102,9 +102,9 @@ namespace Tonic {
   class LV2Effect_ : public WetDryEffect_ {
 
   protected:
-  	std::map<const char*, ControlParameter> params;
+  	std::map<string, ControlParameter> params;
     LV2Struct self = {
-    		NULL, NULL, NULL, 0, 0, 0, 0, 0, NULL
+    		NULL, NULL, 0, 0, 0, 0, 0, NULL
     	};
   	float* in_buf = nullptr;
   	float* out_buf = nullptr;
@@ -116,7 +116,11 @@ namespace Tonic {
 
   public:
     LV2Effect_() {
-
+    	if(LV2Struct::world == nullptr) {
+    		LV2Struct::world = lilv_world_new();
+    		/* Discover world */
+    		lilv_world_load_all(LV2Struct::world);
+    	}
     }
 
 
