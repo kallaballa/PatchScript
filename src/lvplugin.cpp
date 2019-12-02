@@ -74,10 +74,6 @@ create_ports(LV2Struct* self)
 
 namespace Tonic {
 
-  // -----------------------------------------
-  //                 ADDER
-  // -----------------------------------------
-
   namespace Tonic_{
   using namespace Tonic_;
 
