@@ -171,7 +171,7 @@ namespace Tonic {
       public:
       
         WetDryEffect_();
-      
+        ~WetDryEffect_();
         void setDryLevelGen( Generator gen ){ dryLevelGen_ = gen; };
         void setWetLevelGen( Generator gen ){ wetLevelGen_ = gen; };
       
