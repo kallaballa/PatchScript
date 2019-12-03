@@ -80,10 +80,6 @@ static inline bool ends_with(std::string const & value, std::string const & endi
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-static float map_value(float a0, float a1, float b0, float b1, float a)
-{
-	return b0 + (b1 - b0) * ((a-a0)/(a1-a0));
-}
 namespace Tonic {
 
   // -----------------------------------------
@@ -126,8 +122,8 @@ namespace Tonic {
     		params[name] = p;
     }
 
-    std::vector<std::pair<string, float>> getControls() {
-    	std::vector<std::pair<string, float>> controls;
+    std::vector<std::tuple<string, float, float, float>> getControls() {
+    	std::vector<std::tuple<string, float, float, float>> controls;
   	 	for (uint32_t p = 0; p < lilv_plugin_get_num_ports(plugin); ++p) {
     		const LilvNode* sym = lilv_port_get_symbol(plugin, self.ports[p].lilv_port);
   	 		const char* symbol = lilv_node_as_string (sym);
@@ -136,7 +132,7 @@ namespace Tonic {
     		lilv_port_get_range(plugin, port, &def, &min, &max);
 
     		if (self.ports[p].type == TYPE_CONTROL && !(ends_with(string(symbol), string("_in")) || ends_with(string(symbol), string("_out")) || ends_with(string(symbol), string("_outL"))|| ends_with(string(symbol), string("_outR")) || ends_with(string(symbol), string("_inL")) || ends_with(string(symbol), string("_inR")))) {
-    			controls.push_back({symbol, lilv_node_as_float(def)});
+    			controls.push_back({symbol, lilv_node_as_float(min), lilv_node_as_float(max), lilv_node_as_float(def)});
     		}
 
     		lilv_node_free(min);
@@ -163,16 +159,18 @@ namespace Tonic {
       	gen()->setControl(name,param);
       }
 
-      std::vector<std::pair<string,float>> getControls() {
+      std::vector<std::tuple<string, float, float, float>> getControls() {
       	return gen()->getControls();
       }
 
       void createParameters(const string& prefix, Synth s) {
-      	std::vector<std::pair<string,float>> controls = getControls();
+      	auto controls = getControls();
       	string name;
-      	for(const auto& p : controls) {
-      		name = prefix + "." + p.first;
-      		setControl(p.first.c_str(), s.addParameter(name, p.second));
+      	for(const auto& t : controls) {
+      		name = prefix + "." + std::get<0>(t);
+      		std::cerr << name << ": " << std::get<3>(t) << "/" << std::get<1>(t) << "/" << std::get<2>(t) << std::endl;
+      		auto cp = s.addParameter(name, std::get<3>(t)).min(std::get<1>(t)).max(std::get<2>(t));
+      		setControl(std::get<0>(t).c_str(), cp);
       	}
       }
   };
