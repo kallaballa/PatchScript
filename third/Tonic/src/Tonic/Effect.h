@@ -171,7 +171,6 @@ namespace Tonic {
       public:
       
         WetDryEffect_();
-        ~WetDryEffect_();
         void setDryLevelGen( Generator gen ){ dryLevelGen_ = gen; };
         void setWetLevelGen( Generator gen ){ wetLevelGen_ = gen; };
       
@@ -258,7 +257,6 @@ namespace Tonic {
   {
       typedef TemplatedWetDryEffect self_;
     public:
-      
       // This cast is not safe - up to implementation to ensure that templated EffectType_ is actually an Effect_ subclass
       virtual EffectType & input( Generator input ){
         this->gen()->setInput( input );
