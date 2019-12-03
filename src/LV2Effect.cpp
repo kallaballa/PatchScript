@@ -1,4 +1,4 @@
-#include "lvplugin.hpp"
+#include "LV2Effect.hpp"
 
 LilvWorld* LV2Struct::world = nullptr;
 

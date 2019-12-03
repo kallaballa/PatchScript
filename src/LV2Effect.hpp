@@ -1,25 +1,11 @@
-#ifndef LV2PLUGIN_HPP_
-#define LV2PLUGIN_HPP_
-/*
-  Copyright 2007-2019 David Robillard <http://drobilla.net>
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted, provided that the above
-  copyright notice and this permission notice appear in all copies.
-
-  THIS SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
-  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
-  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
-  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-*/
+#ifndef LV2EFFECT_HPP_
+#define LV2EFFECT_HPP_
 
 #include "lilv-0/lilv/lilv.h"
 
 #include "lv2.h"
 
+#include "../third/Tonic/src/Tonic/Synth.h"
 #include "../third/Tonic/src/Tonic/Effect.h"
 #include "../third/Tonic/src/Tonic/ControlParameter.h"
 #include <cassert>
@@ -140,33 +126,24 @@ namespace Tonic {
     		params[name] = p;
     }
 
-    std::vector<string> getControlNames() {
-    	std::vector<string> names;
-  	 	for (uint32_t p = 0; p < lilv_plugin_get_num_ports(plugin); ++p) {
-  	 		const char* symbol = lilv_node_as_string (lilv_port_get_symbol(plugin, self.ports[p].lilv_port));
-  	 		if (self.ports[p].type == TYPE_CONTROL && !(ends_with(string(symbol), string("_in")) || ends_with(string(symbol), string("_out")) || ends_with(string(symbol), string("_outL"))|| ends_with(string(symbol), string("_outR")) || ends_with(string(symbol), string("_inL")) || ends_with(string(symbol), string("_inR")))) {
-    			names.push_back(symbol);
-    		}
-  	 	}
-  	 	return names;
-    }
-
-    std::vector<float> getControlDefaults() {
-    	std::vector<float> defaults;
+    std::vector<std::pair<string, float>> getControls() {
+    	std::vector<std::pair<string, float>> controls;
   	 	for (uint32_t p = 0; p < lilv_plugin_get_num_ports(plugin); ++p) {
     		const LilvNode* sym = lilv_port_get_symbol(plugin, self.ports[p].lilv_port);
-    		const char* symbol = lilv_node_as_string(sym);
+  	 		const char* symbol = lilv_node_as_string (sym);
     		const LilvPort* port  = lilv_plugin_get_port_by_symbol(plugin, sym);
     		LilvNode *min, *max, *def;
     		lilv_port_get_range(plugin, port, &def, &min, &max);
-  	 		if (self.ports[p].type == TYPE_CONTROL && !(ends_with(string(symbol), string("_in")) || ends_with(string(symbol), string("_out")) || ends_with(string(symbol), string("_outL"))|| ends_with(string(symbol), string("_outR")) || ends_with(string(symbol), string("_inL")) || ends_with(string(symbol), string("_inR")))) {
-    			defaults.push_back(lilv_node_as_float(def));
+
+    		if (self.ports[p].type == TYPE_CONTROL && !(ends_with(string(symbol), string("_in")) || ends_with(string(symbol), string("_out")) || ends_with(string(symbol), string("_outL"))|| ends_with(string(symbol), string("_outR")) || ends_with(string(symbol), string("_inL")) || ends_with(string(symbol), string("_inR")))) {
+    			controls.push_back({symbol, lilv_node_as_float(def)});
     		}
+
     		lilv_node_free(min);
     		lilv_node_free(max);
     		lilv_node_free(def);
   	 	}
-  	 	return defaults;
+  	 	return controls;
     }
 
     void setInput( Generator input );
@@ -186,12 +163,17 @@ namespace Tonic {
       	gen()->setControl(name,param);
       }
 
-      std::vector<string> getControlNames() {
-      	return gen()->getControlNames();
+      std::vector<std::pair<string,float>> getControls() {
+      	return gen()->getControls();
       }
 
-      std::vector<float> getControlDefaults() {
-      	return gen()->getControlDefaults();
+      void createParameters(const string& prefix, Synth s) {
+      	std::vector<std::pair<string,float>> controls = getControls();
+      	string name;
+      	for(const auto& p : controls) {
+      		name = prefix + "." + p.first;
+      		setControl(p.first.c_str(), s.addParameter(name, p.second));
+      	}
       }
   };
 }

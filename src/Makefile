@@ -18,7 +18,7 @@ ifdef JAVASCRIPT
 TARGET := patchscript.html
 endif
 
-SRCS  := tonic_lua0.cpp tonic_lua1.cpp tonic_lua2.cpp PolySynth.cpp lvplugin.cpp  PatchScript.cpp SqlStore.cpp FileStore.cpp PatFileReader.cpp PatFileWriter.cpp MetFileReader.cpp MetFileWriter.cpp RevFileReader.cpp RevFileWriter.cpp IOUtil.cpp SessionObject.cpp lvplugin.cpp
+SRCS  := tonic_lua0.cpp tonic_lua1.cpp tonic_lua2.cpp PolySynth.cpp LV2Effect.cpp  PatchScript.cpp SqlStore.cpp FileStore.cpp PatFileReader.cpp PatFileWriter.cpp MetFileReader.cpp MetFileWriter.cpp RevFileReader.cpp RevFileWriter.cpp IOUtil.cpp SessionObject.cpp
 CXXFLAGS += -I/usr/lib64/ -I../third/kaguya/include -I../third/lua-5.3.5/src -I../third/Tonic/src -I../third/SQLiteCPP -fpic
 LIBS += -ltonic -llua -ldl -llilv-0 -lz -lsqlite3
 LDFLAGS += -L../third/lua-5.3.5/src -L../third/Tonic/src -shared

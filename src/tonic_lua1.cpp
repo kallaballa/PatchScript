@@ -1,5 +1,5 @@
 #include "tonic_lua.hpp"
-#include "lvplugin.hpp"
+#include "LV2Effect.hpp"
 
 using namespace Tonic;
 
@@ -218,13 +218,12 @@ std::vector<std::string> bindings1(kaguya::State& state) {
 					(Reverb& (Reverb::*)(ControlGenerator))&Reverb::stereoWidth)
 					));
 
- 	allow.push_back("LV2Plugin");
-	state["LV2Plugin"].setClass(make_wet_dry(state,
+ 	allow.push_back("LV2Effect");
+	state["LV2Effect"].setClass(make_wet_dry(state,
 			kaguya::UserdataMetatable<LV2Effect,TemplatedWetDryEffect<LV2Effect,Tonic_::LV2Effect_>>()
 			.setConstructors<LV2Effect(const char*)>()
 			.addFunction("setControl", &LV2Effect::setControl)
-			.addFunction("getControlNames", &LV2Effect::getControlNames)
-			.addFunction("getControlDefaults", &LV2Effect::getControlDefaults)
+			.addFunction("createParameters", &LV2Effect::createParameters)
 					));
 
 	allow.push_back("BitCrusher");
