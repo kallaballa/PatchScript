@@ -160,6 +160,10 @@ namespace Tonic {
   		if (!port) {
   			fatal(&self, 7, "Unknown port `%s'\n", pair.first.c_str());
   		}
+
+  		if (!(lilv_node_as_float(min) <= value && lilv_node_as_float(max) >= value)) {
+  			fatal(&self, 7, "Value for %s out of bounds `%f'\n", pair.first.c_str(), value);
+  		}
   		self.ports[lilv_port_get_index(plugin, port)].value = value;
   		lilv_node_free(min);
   		lilv_node_free(max);
