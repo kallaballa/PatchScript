@@ -113,14 +113,14 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 					function run_sandbox(synth)
 							local content = readAll("%s")
 							local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
-							chunk,errstring = load(function() return wrapped end)
+							chunk, errstring = load(wrapped)
 							if chunk == nil then
-								error(errstring);
+								return error(errstring);
 							else
 								chunk()
+								debug.setupvalue(_patchScriptWrapper, 1, %s)
+								return _patchScriptWrapper(synth)
 							end
-							debug.setupvalue(_patchScriptWrapper, 1, %s)
-							return _patchScriptWrapper(synth)
 					end
 					run_sandbox(synth)
 				)__SANDBOX__";
