@@ -110,16 +110,20 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 							return content
 					end
 	
-				function run_sandbox(synth)
-						local content = readAll("%s")
-						local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
-						chunk = load(wrapped)
-						chunk()
-						debug.setupvalue(_patchScriptWrapper, 1, %s)
-						return _patchScriptWrapper(synth)
-				end
-				run_sandbox(synth)
-			)__SANDBOX__";
+					function run_sandbox(synth)
+							local content = readAll("%s")
+							local wrapped = "function _patchScriptWrapper(synth)\n" .. content .. "\nend"
+							chunk,errstring = load(function() return wrapped end)
+							if chunk == nil then
+								error(errstring);
+							else
+								chunk()
+							end
+							debug.setupvalue(_patchScriptWrapper, 1, %s)
+							return _patchScriptWrapper(synth)
+					end
+					run_sandbox(synth)
+				)__SANDBOX__";
 
 				std::string whiteList = ss.str();
 				char buffer[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
