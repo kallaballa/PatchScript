@@ -59,7 +59,6 @@ ${GCH}: %.gch: ${HEADERS}
 install:
 	mkdir -p ${DESTDIR}/${PREFIX}/bin
 	cp ${TARGET} ${DESTDIR}/${PREFIX}/bin
-	cp ../third/Tonic/src/libtonic.so ${DESTDIR}/${PREFIX}/lib
 
 uninstall:
 	rm ${DESTDIR}/${PREFIX}/bin/${TARGET}
