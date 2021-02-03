@@ -70,9 +70,9 @@ namespace Tonic {
         float fidx;
         float frac = modff(readHead_, &fidx);
         int idx_a = ((int)fidx * nChannels_ + channel);
-        if (idx_a >= size_) idx_a -= size_; // this happens occasionally due to floating point rounding
+        if (size_t(idx_a) >= size_) idx_a -= size_; // this happens occasionally due to floating point rounding
         int idx_b = idx_a + nChannels_;
-        if (idx_b >= size_) idx_b -= size_;
+        if (size_t(idx_b) >= size_) idx_b -= size_;
         
         // Linear interpolation
         return (data_[idx_a] + frac * (data_[idx_b] - data_[idx_a]));
@@ -95,7 +95,7 @@ namespace Tonic {
     //! Advance read/write heads
     inline void advance(){
       
-      if (++writeHead_ >= nFrames_)
+      if (size_t(++writeHead_) >= nFrames_)
         writeHead_ = 0;
       
       // assume read head advances by 1 for efficiency in constant-delay lines

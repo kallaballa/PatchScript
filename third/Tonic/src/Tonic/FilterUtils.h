@@ -62,8 +62,9 @@ namespace Tonic {
       coef_out[4] = (a0 - a1*sf + sfsq)/norm;
   }
   
-#pragma mark - Biquad Class
-  
+/*
+ Biquad Class
+*/  
   //! Biquad_ is an IIR biquad filter which provides a base object on which to build more advanced filters
   class Biquad {
     

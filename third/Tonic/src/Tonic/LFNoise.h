@@ -49,7 +49,7 @@ namespace Tonic{
         unsigned long nsmps = std::min(remain, (unsigned long)mCounter);
         remain -= nsmps;
         mCounter -= nsmps;
-        for(int i = 0; i < nsmps; i++){
+        for(unsigned long i = 0; i < nsmps; i++){
           *(out++) = mLevel;
           mLevel += mSlope;
         }

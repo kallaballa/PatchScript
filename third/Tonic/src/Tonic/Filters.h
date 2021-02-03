@@ -29,8 +29,10 @@
  **********************************************/
 
 namespace Tonic {
-  
+
+/*  
 #pragma mark - Core Generators
+*/
   
   // ------------------- Core Generators -----------------------
   
@@ -398,7 +400,9 @@ namespace Tonic {
     };
   }
   
+/*
 #pragma mark - Smart Pointers
+*/
   
   template<class FilterType, class FilterType_>
   class TemplatedFilter : public TemplatedEffect<FilterType, FilterType_>{

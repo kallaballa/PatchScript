@@ -104,14 +104,14 @@ namespace Tonic {
   
   class ControlEquals : public TemplatedControlComparisonOperator<Tonic_::ControlEquals_> {};
   
-  static ControlEquals operator == (ControlGenerator lhs, ControlGenerator rhs){
+  ControlEquals operator == (ControlGenerator lhs, ControlGenerator rhs){
     ControlEquals c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlEquals operator == (ControlGenerator lhs, TonicFloat right){
+  ControlEquals operator == (ControlGenerator lhs, TonicFloat right){
     ControlEquals c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));
@@ -138,14 +138,14 @@ namespace Tonic {
   
   class ControlNotEquals : public TemplatedControlComparisonOperator<Tonic_::ControlNotEquals_> {};
   
-  static ControlNotEquals operator != (ControlGenerator lhs, ControlGenerator rhs){
+  ControlNotEquals operator != (ControlGenerator lhs, ControlGenerator rhs){
     ControlNotEquals c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlNotEquals operator != (ControlGenerator lhs, TonicFloat right){
+  ControlNotEquals operator != (ControlGenerator lhs, TonicFloat right){
     ControlNotEquals c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));
@@ -173,14 +173,14 @@ namespace Tonic {
   
   class ControlGreaterThan : public TemplatedControlComparisonOperator<Tonic_::ControlGreaterThan_> {};
   
-  static ControlGreaterThan operator > (ControlGenerator lhs, ControlGenerator rhs){
+  ControlGreaterThan operator > (ControlGenerator lhs, ControlGenerator rhs){
     ControlGreaterThan c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlGreaterThan operator > (ControlGenerator lhs, TonicFloat right){
+  ControlGreaterThan operator > (ControlGenerator lhs, TonicFloat right){
     ControlGreaterThan c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));
@@ -208,14 +208,14 @@ namespace Tonic {
   
   class ControlGreaterOrEqual : public TemplatedControlComparisonOperator<Tonic_::ControlGreaterOrEqual_> {};
   
-  static ControlGreaterOrEqual operator >= (ControlGenerator lhs, ControlGenerator rhs){
+  ControlGreaterOrEqual operator >= (ControlGenerator lhs, ControlGenerator rhs){
     ControlGreaterOrEqual c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlGreaterOrEqual operator >= (ControlGenerator lhs, TonicFloat right){
+  ControlGreaterOrEqual operator >= (ControlGenerator lhs, TonicFloat right){
     ControlGreaterOrEqual c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));
@@ -243,14 +243,14 @@ namespace Tonic {
   
   class ControlLessThan : public TemplatedControlComparisonOperator<Tonic_::ControlLessThan_> {};
   
-  static ControlLessThan operator < (ControlGenerator lhs, ControlGenerator rhs){
+  ControlLessThan operator < (ControlGenerator lhs, ControlGenerator rhs){
     ControlLessThan c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlLessThan operator < (ControlGenerator lhs, TonicFloat right){
+  ControlLessThan operator < (ControlGenerator lhs, TonicFloat right){
     ControlLessThan c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));
@@ -278,14 +278,14 @@ namespace Tonic {
   
   class ControlLessOrEqual : public TemplatedControlComparisonOperator<Tonic_::ControlLessOrEqual_> {};
   
-  static ControlLessOrEqual operator <= (ControlGenerator lhs, ControlGenerator rhs){
+  ControlLessOrEqual operator <= (ControlGenerator lhs, ControlGenerator rhs){
     ControlLessOrEqual c;
     c.setLeft(lhs);
     c.setRight(rhs);
     return c;
   }
   
-  static ControlLessOrEqual operator <= (ControlGenerator lhs, TonicFloat right){
+  ControlLessOrEqual operator <= (ControlGenerator lhs, TonicFloat right){
     ControlLessOrEqual c;
     c.setLeft(lhs);
     c.setRight(ControlValue(right));

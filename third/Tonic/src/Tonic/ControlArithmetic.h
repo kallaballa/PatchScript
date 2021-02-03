@@ -93,12 +93,7 @@ namespace Tonic {
 //    return adder;
 //  }
 //
-  static ControlAdder operator+(float a, ControlGenerator b){
-    ControlAdder adder;
-    adder.input(ControlValue(a));
-    adder.input(ControlGenerator(b));
-    return adder;
-  }
+  ControlAdder operator+(float a, ControlGenerator b);
   
   // -----------------------------------------
   //               SUBTRACTOR
@@ -159,12 +154,7 @@ namespace Tonic {
 //    return subtractor;
 //  }
 //
-  static ControlSubtractor operator-(float a, ControlGenerator b){
-    ControlSubtractor subtractor;
-    subtractor.left(ControlValue(a));
-    subtractor.right(ControlGenerator(b));
-    return subtractor;
-  }
+  ControlSubtractor operator-(float a, ControlGenerator b);
   
   
   // -----------------------------------------
@@ -241,12 +231,7 @@ namespace Tonic {
 //    return mult;
 //  }
 //
-  static ControlMultiplier operator*(float a, ControlGenerator b){
-    ControlMultiplier mult;
-    mult.input(ControlValue(a));
-    mult.input(ControlGenerator(b));
-    return mult;
-  }
+  ControlMultiplier operator*(float a, ControlGenerator b);
   
   // -----------------------------------------
   //                DIVIDER
@@ -314,12 +299,7 @@ namespace Tonic {
 //    return divider;
 //  }
 //
-  static ControlDivider operator/(float a, ControlGenerator b){
-    ControlDivider divider;
-    divider.left(ControlValue(a));
-    divider.right(ControlGenerator(b));
-    return divider;
-  }
+  ControlDivider operator/(float a, ControlGenerator b);
 
 }
 

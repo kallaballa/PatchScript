@@ -125,9 +125,7 @@ namespace Tonic {
   
   //! Set the operational sample rate.
   /*! !!!: CHANGING WHILE RUNNING WILL RESULT IN UNDEFINED BEHAVIOR. MUST BE SET PRIOR TO OBJECT ALLOCATION. */
-  static void setSampleRate(TonicFloat sampleRate){
-    Tonic_::sampleRate_ = sampleRate;
-  }
+  void setSampleRate(TonicFloat sampleRate);
   
   //! Return sample rate
   static TonicFloat sampleRate(){
@@ -185,7 +183,9 @@ namespace Tonic {
   // Will always be at time 0, forceNewOutput == true
   static const Tonic_::SynthesisContext_ DummyContext;
 
-#pragma mark - Utility Functions
+/*
+ * Utility Functions
+ */
   
   //-- Vector Math --
   inline static void vcopy( TonicFloat * dst, unsigned int dst_str, const TonicFloat * src, unsigned int src_str, unsigned int length ){
@@ -296,12 +296,7 @@ namespace Tonic {
     return ((TonicFloat)rand()/RAND_MAX) * 2.0f - 1.0f;
   }
   
-  static float randomFloat(float a, float b) {
-    float random = ((float) rand()) / (float) RAND_MAX;
-    float diff = b - a;
-    float r = random * diff;
-    return a + r;
-}
+  float randomFloat(float a, float b);
 
   //! Tonic exception class
   // May want to implement custom exception behavior here, but for now, this is essentially a typedef
@@ -314,23 +309,9 @@ namespace Tonic {
   
   // -- Logging --
   
-  static void error(string message, bool fatal = false){
-    // maybe also log to console?
-    printf("Tonic::error: %s\n", message.c_str() );
-    if (fatal){
-    	throw TonicException(message);
-    }
-  }
-  
-  static void warning(string message){
-    printf("Tonic::warning: %s\n", message.c_str());
-  }
-  
-  static void debug(string message){
-#ifdef TONIC_DEBUG
-    printf("Tonic::debug: %s\n", message.c_str());
-#endif
-  }
+  void error(string message, bool fatal = false);
+  void warning(string message);
+  void debug(string message);
 
   //! Dictionary helper class for registering objects by name. For correct usage, objects should be Smart Pointers.
   template<class T>

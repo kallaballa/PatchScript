@@ -34,6 +34,12 @@ namespace Tonic{ namespace Tonic_ {
     workSpace_.resize(kSynthesisBlockSize, stereo ? 2 : 1, 0);
   }
 
+  Adder operator + (float a, Generator b){
+    Adder add;
+    add.input(FixedValue(a));
+    add.input(b);
+    return add;
+  }
   
   // -----------------------------------------
   //                SUBTRACTOR
@@ -65,6 +71,12 @@ namespace Tonic{ namespace Tonic_ {
     workSpace_.resize(kSynthesisBlockSize, stereo ? 2 : 1, 0);
   }
 
+  Subtractor operator - (float a, Generator b){
+    Subtractor sub;
+    sub.left(FixedValue(a));
+    sub.right(b);
+    return sub;
+  }
   
   // -----------------------------------------
   //                MULTIPLIER
@@ -87,6 +99,9 @@ namespace Tonic{ namespace Tonic_ {
     workSpace_.resize(kSynthesisBlockSize, stereo ? 2 : 1, 0);
   }
   
+  Multiplier operator*(float a, Generator b){
+    return FixedValue(a) * b;
+  }
   
   // -----------------------------------------
   //                DIVIDER
@@ -118,4 +133,10 @@ namespace Tonic{ namespace Tonic_ {
     workSpace_.resize(kSynthesisBlockSize, stereo ? 2 : 1, 0);
   }
   
+  Divider operator / (float a, Generator b){
+    Divider div;
+    div.left(FixedValue(a));
+    div.right(b);
+    return div;
+  }
 }}

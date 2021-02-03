@@ -48,7 +48,7 @@ namespace Tonic {
     {
       TonicFloat *dptr = &frames[0];
       TonicFloat y;
-      for (int i=0; i<kSynthesisBlockSize; i++){
+      for (unsigned int i=0; i<kSynthesisBlockSize; i++){
         
         // feedback stage
         y = *dptr + delayBack_.tickOut(delay_) * coef_;

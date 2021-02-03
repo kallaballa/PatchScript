@@ -15,7 +15,7 @@ ifeq (, $(shell which g++-9))
 endif
 
 
-CXXFLAGS := -pthread -fno-strict-aliasing -std=c++0x -pedantic -Wall
+CXXFLAGS := -pthread -fno-strict-aliasing -std=c++0x -pedantic -Wall -Werror
 LDFLAGS  := -L/opt/local/lib
 LIBS     := -lpthread -lm 
 .PHONY: all release debian-release info debug clean debian-clean distclean 

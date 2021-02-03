@@ -57,7 +57,7 @@ namespace Tonic {
       float ret = 0;
       
       float leastDistance = -1;
-      for(int i = 0; i<mScale.size(); i++){
+      for(size_t i = 0; i<mScale.size(); i++){
         float distance = mScale.at(i) - number;
         if(distance < 0){
           distance = -distance;

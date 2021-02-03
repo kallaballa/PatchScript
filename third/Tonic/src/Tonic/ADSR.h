@@ -112,7 +112,7 @@ namespace Tonic {
         
       }
       
-      int samplesRemaining = kSynthesisBlockSize;
+      size_t samplesRemaining = kSynthesisBlockSize;
       
       while (samplesRemaining > 0)
       {
@@ -138,7 +138,7 @@ namespace Tonic {
           {
             
             // how many samples remain in current segment
-            unsigned long remainder = (segCounter > segLength) ? 0 : segLength - segCounter;
+            size_t remainder = (segCounter > segLength) ? 0 : segLength - segCounter;
             if (remainder < samplesRemaining){
               
               // fill up part of the ramp then switch segment
@@ -146,7 +146,7 @@ namespace Tonic {
               if (bIsExponential){
 
                 // one pole filter
-                for (unsigned long i=0; i<remainder; i++){
+                for (size_t i=0; i<remainder; i++){
                   onePoleLPFTick(targetValue, lastValue, pole);
                   *fdata++ = lastValue;
                 }
@@ -166,7 +166,7 @@ namespace Tonic {
                 fdata += remainder;
                 
                 #else
-                for (unsigned long i=0; i<remainder; i++){
+                for (size_t i=0; i<remainder; i++){
                   lastValue += increment;
                   *fdata++ = lastValue;
                 }
@@ -193,7 +193,7 @@ namespace Tonic {
               if (bIsExponential){
                 
                 // one pole filter
-                for (int i=0; i<samplesRemaining; i++){
+                for (size_t i=0; i<samplesRemaining; i++){
                   onePoleLPFTick(targetValue, lastValue, pole);
                   *fdata++ = lastValue;
                 }
@@ -212,7 +212,7 @@ namespace Tonic {
                 lastValue += increment*(samplesRemaining-1);
                 
                 #else
-                for (int i=0; i<samplesRemaining; i++){
+                for (size_t i=0; i<samplesRemaining; i++){
                   lastValue += increment;
                   *fdata++ = lastValue;
                 }

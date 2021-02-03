@@ -163,9 +163,9 @@ namespace Tonic {
       outputFrames_.fillChannels();
       
     }
-    
+/*    
 #pragma mark - Generator setters
-    
+*/    
     inline void RampedValue_::setValueGen(ControlGenerator value){
       valueGen_ = value;
     }
@@ -177,9 +177,9 @@ namespace Tonic {
     inline void RampedValue_::setLengthGen(ControlGenerator length){
       lengthGen_ = length;
     }
-
+/*
 #pragma mark - Internal State setters
-    
+*/    
     inline void RampedValue_::updateValue( TonicFloat value){
       
       // When the value gen changes, immediately abort the current ramp and go to the new value.

@@ -18,7 +18,7 @@ namespace Tonic{
       void BitCrusher_::setInput( Generator input ) {
         input_ = input;
         setIsStereoInput(input_.isStereoOutput());
-      };
+      }
     
       void BitCrusher_::setIsStereoInput( bool stereo ) {
         if (stereo != isStereoInput_){
@@ -27,7 +27,7 @@ namespace Tonic{
         }
         isStereoInput_ = stereo;
         isStereoOutput_ = stereo;
-      };
+      }
     
       void BitCrusher_::setBitDepth(ControlGenerator bitDepthArg){
         bitDepth = bitDepthArg;

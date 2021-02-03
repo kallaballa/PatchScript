@@ -48,7 +48,7 @@ namespace Tonic {
       
       memset(framesData, 0, sizeof(TonicFloat) * outputFrames_.size());
       
-      for (int j =0; j < inputs_.size(); j++) {
+      for (size_t j =0; j < inputs_.size(); j++) {
         inputs_[j].tick(workSpace_, context);
         outputFrames_ += workSpace_; // add each sample in frames to each sample in workspace
       }
@@ -85,12 +85,7 @@ namespace Tonic {
 //  }
 //
 //
-  static Adder operator + (float a, Generator b){
-    Adder add;
-    add.input(FixedValue(a));
-    add.input(b);
-    return add;
-  }
+  Adder operator + (float a, Generator b);
 //
 //
 //  static Adder operator + (Generator a, float b){
@@ -172,12 +167,7 @@ namespace Tonic {
 //    return sub;
 //  }
 //
-  static Subtractor operator - (float a, Generator b){
-    Subtractor sub;
-    sub.left(FixedValue(a));
-    sub.right(b);
-    return sub;
-  }
+  Subtractor operator - (float a, Generator b);
 
 //  static Subtractor operator - (Generator a, float b){
 //    Subtractor sub;
@@ -231,7 +221,7 @@ namespace Tonic {
       inputs_[0].tick(outputFrames_, context);
       
       // for additional generators, use the workspace stkframes for tick, and multiply it into the frames argument
-      for(int i = 1; i < inputs_.size(); i++) {
+      for(size_t i = 1; i < inputs_.size(); i++) {
         inputs_[i].tick(workSpace_, context);
         outputFrames_ *= workSpace_;
       }
@@ -264,9 +254,7 @@ namespace Tonic {
 //    return mult;
 //  }
 //
-  static Multiplier operator*(float a, Generator b){
-    return FixedValue(a) * b;
-  }
+  Multiplier operator*(float a, Generator b);
 //
 //  static Multiplier operator*(Generator a, float b){
 //    return a * FixedValue(b);
@@ -344,12 +332,7 @@ namespace Tonic {
 //    return div;
 //  }
 //
-  static Divider operator / (float a, Generator b){
-    Divider div;
-    div.left(FixedValue(a));
-    div.right(b);
-    return div;
-  }
+  Divider operator / (float a, Generator b);
 //
 //  static Divider operator / (Generator a, float b){
 //    Divider div;
