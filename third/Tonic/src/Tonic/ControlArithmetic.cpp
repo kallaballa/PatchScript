@@ -9,26 +9,33 @@
 #include "ControlArithmetic.h"
 
 namespace Tonic {
-ControlAdder operator+(float a, ControlGenerator b){
-  ControlAdder adder;
-  adder.input(ControlValue(a));
-  adder.input(ControlGenerator(b));
-  return adder;
-}
+	ControlAdder operator+(float a, ControlGenerator b){
+		ControlAdder adder;
+		adder.input(ControlValue(a));
+		adder.input(ControlGenerator(b));
+		return adder;
+	}
 
-ControlSubtractor operator-(float a, ControlGenerator b){
-  ControlSubtractor subtractor;
-  subtractor.left(ControlValue(a));
-  subtractor.right(ControlGenerator(b));
-  return subtractor;
-}
+	ControlSubtractor operator-(float a, ControlGenerator b){
+		ControlSubtractor subtractor;
+		subtractor.left(ControlValue(a));
+		subtractor.right(ControlGenerator(b));
+		return subtractor;
+	}
 
-ControlMultiplier operator*(float a, ControlGenerator b){
-  ControlMultiplier mult;
-  mult.input(ControlValue(a));
-  mult.input(ControlGenerator(b));
-  return mult;
-}
+	ControlMultiplier operator*(float a, ControlGenerator b){
+		ControlMultiplier mult;
+		mult.input(ControlValue(a));
+		mult.input(ControlGenerator(b));
+		return mult;
+	}
+
+	ControlDivider operator/(float a, ControlGenerator b){
+		ControlDivider divider;
+		divider.left(ControlValue(a));
+		divider.right(ControlGenerator(b));
+		return divider;
+	}
 
 	namespace Tonic_{
     
