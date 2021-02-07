@@ -168,8 +168,7 @@ namespace Tonic {
       	string name;
       	for(const auto& t : controls) {
       		name = prefix + "." + std::get<0>(t);
-      		std::cerr << name << ": " << std::get<3>(t) << "/" << std::get<1>(t) << "/" << std::get<2>(t) << std::endl;
-      		auto cp = s.addParameter(name, std::get<3>(t)).min(std::get<1>(t)).max(std::get<2>(t));
+      		auto cp = s.addParameter(name, std::get<3>(t), std::get<1>(t), std::get<2>(t));
       		setControl(std::get<0>(t).c_str(), cp);
       	}
       }
