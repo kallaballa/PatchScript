@@ -53,7 +53,7 @@ namespace Tonic{
       
       void setLimitOutput(bool shouldLimit) { limitOutput_ = shouldLimit; };
       
-      ControlParameter addParameter(string name, TonicFloat initialValue);
+      ControlParameter addParameter(string name, TonicFloat initialValue, TonicFloat minValue, TonicFloat maxValue);
       
       void addParameter(ControlParameter parameter);
       
@@ -120,15 +120,9 @@ namespace Tonic{
     }
 
     //! Add a ControlParameter with name "name"
-    ControlParameter addParameter(string name)
+    ControlParameter addParameter(string name, TonicFloat initialValue, TonicFloat minValue, TonicFloat maxValue)
     {
-      return gen()->addParameter(name, 0);
-    }
-    
-    //! Add a ControlParameter with name "name"
-    ControlParameter addParameter(string name, TonicFloat initialValue = 0.f)
-    {
-      return gen()->addParameter(name, initialValue);
+      return gen()->addParameter(name, initialValue, minValue, maxValue);
     }
     
     //! Add a ControlParameter initialized elsewhere. Will overwrite existing parameter with the same name.

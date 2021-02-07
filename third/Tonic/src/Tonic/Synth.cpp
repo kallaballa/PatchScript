@@ -68,7 +68,7 @@ namespace Tonic {
 
     }
     
-    ControlParameter Synth_::addParameter(string name, TonicFloat initialValue)
+    ControlParameter Synth_::addParameter(string name, TonicFloat initialValue, TonicFloat minValue, TonicFloat maxValue)
     {
     	if(!isValidControlParameterName(name)) {
     		throw std::invalid_argument("Illegal control parameter name: \"" + name + "\"");
@@ -80,9 +80,11 @@ namespace Tonic {
 
     	if (parameters_.find(name) == parameters_.end())
       {
-        ControlParameter param = ControlParameter().name(name).value(initialValue).displayName(name);
+        ControlParameter param = ControlParameter().name(name).value(initialValue).min(minValue).max(maxValue).displayName(name);
         parameters_[name] = param;
         orderedParameterNames_.push_back(name);
+      } else {
+        error("Duplicate control parameter: " + name);
       }
       return parameters_[name];
     }
