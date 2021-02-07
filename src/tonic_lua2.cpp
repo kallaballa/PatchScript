@@ -18,8 +18,8 @@ std::vector<std::string> bindings2(kaguya::State& state) {
 			.addFunction("setLimitOutput", &Synth::setLimitOutput)
 			.addFunction("setOutputGen", &Synth::setOutputGen)
 			.addOverloadedFunctions("addParameter",
-					(ControlParameter (Synth::*)(string))&Synth::addParameter,
-						(ControlParameter (Synth::*)(string, TonicFloat))&Synth::addParameter,
+//					(ControlParameter (Synth::*)(string, TonicFloat))&Synth::addParameter,
+						(ControlParameter (Synth::*)(string, TonicFloat, TonicFloat, TonicFloat))&Synth::addParameter,
 						(void (Synth::*)(ControlParameter))&Synth::addParameter));
 
 	allow.push_back("SampleTable");
