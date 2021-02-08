@@ -126,11 +126,14 @@ std::pair<bool, string> PatchScript::init(const std::string& patchFile, const si
 				)__SANDBOX__";
 
 				std::string whiteList = ss.str();
-				char buffer[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
+				char* buffer = new char[(sandboxRead.size() + whiteList.size() + patchFile.size())*2];
 				sprintf(buffer, sandboxRead.c_str(), patchFile.c_str(), whiteList.c_str());
 
 				if (!state_->dostring(buffer)) {
+					delete buffer;
 					break;
+				} else {
+					delete buffer;
 				}
 			} else {
 				if (!state_->dofile(patchFile)) {
